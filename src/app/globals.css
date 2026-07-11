@@ -1,26 +1,160 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ------------------------------------------------------------------ */
+/*  Data Science Mastery — Design Tokens                               */
+/*  Monochromatic, editorial, premium. Accents carry semantic meaning. */
+/* ------------------------------------------------------------------ */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Light mode */
+  --bg-base: #ffffff;
+  --bg-elevated: #fafafa;
+  --bg-subtle: #f4f4f4;
+  --border-color: #e5e5e5;
+  --text-primary: #0a0a0a;
+  --text-secondary: #525252;
+  --text-muted: #a1a1a1;
+
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #f43f5e;
+}
+
+.dark {
+  --bg-base: #0b0b0b;
+  --bg-elevated: #111111;
+  --bg-subtle: #181818;
+  --border-color: #222222;
+  --text-primary: #f5f5f5;
+  --text-secondary: #a1a1a1;
+  --text-muted: #525252;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-base: var(--bg-base);
+  --color-elevated: var(--bg-elevated);
+  --color-subtle: var(--bg-subtle);
+  --color-edge: var(--border-color);
+  --color-primary: var(--text-primary);
+  --color-secondary: var(--text-secondary);
+  --color-muted: var(--text-muted);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+
+  --animate-float-up: float-up 1.4s ease-out forwards;
+  --animate-pulse-dot: pulse-dot 2s ease-in-out infinite;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@keyframes float-up {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  20% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-28px);
   }
 }
 
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--success) 25%, transparent);
+}
+
+/* Scrollbars — quiet, monochrome */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-color) transparent;
+}
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 8px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Dotted-underline glossary terms (Step 2: Theory) */
+.term {
+  text-decoration: underline dotted var(--text-muted) 1.5px;
+  text-underline-offset: 4px;
+  cursor: help;
+}
+
+/* Prose defaults for lesson body text */
+.lesson-prose p {
+  margin-bottom: 1.25rem;
+  line-height: 1.8;
+  font-size: 1.0625rem;
+  color: var(--text-secondary);
+}
+.lesson-prose strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+.lesson-prose code {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 0.875em;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 0.125rem 0.375rem;
+  color: var(--text-primary);
+}
+
+/* Focus ring — WCAG-visible, emerald */
+.focus-ring {
+  outline: none;
+}
+.focus-ring:focus-visible {
+  box-shadow:
+    0 0 0 2px var(--bg-base),
+    0 0 0 4px var(--success);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
