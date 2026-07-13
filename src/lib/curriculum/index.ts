@@ -26,8 +26,7 @@
 /* ------------------------------------------------------------------ */
 
 /* ---- Load registered content (side-effect imports) --------------- */
-import "@/content/courses/python/index";
-// data-analysis course will be imported here after A2.5
+import "@/content/courses/index";
 
 /* ---- Re-export normalized types ----------------------------------- */
 export type {

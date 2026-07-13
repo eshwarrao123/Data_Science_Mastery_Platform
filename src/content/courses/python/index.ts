@@ -8,13 +8,11 @@ import { registerCourse } from "@/lib/curriculum/registry";
 import { pythonCourse } from "./course";
 import { foundationsModule } from "./modules/foundations/module";
 import { variablesAndDataTypes } from "./modules/foundations/lessons/variables-and-data-types";
+import { listsVsNumpyArrays } from "./modules/foundations/lessons/lists-vs-numpy-arrays";
 
 registerCourse(pythonCourse, [
   {
     module: foundationsModule,
-    lessons: [
-      variablesAndDataTypes,
-      // lists-vs-numpy-arrays — to be migrated in A2.4
-    ],
+    lessons: [variablesAndDataTypes, listsVsNumpyArrays],
   },
 ]);
