@@ -8,9 +8,10 @@ import { InteractiveDiagram } from "@/components/lesson/interactive-diagram";
 import { WorkedExamples } from "@/components/lesson/worked-example";
 import { InlineEditor } from "@/components/lesson/inline-editor";
 import { Exercises } from "@/components/lesson/exercises";
+import { emit } from "@/lib/events/learning-events";
 
 /* ------------------------------------------------------------------ */
-/*  onBlockEvent seam (Phase A4 mastery hook)                          */
+/*  onBlockEvent — retained for route-level mastery wiring             */
 /* ------------------------------------------------------------------ */
 export interface BlockEvent {
   lessonId: string;
@@ -243,27 +244,24 @@ const BLOCK_REGISTRY: BlockRegistry = {
   "inline-code": (block, ctx) => (
     <InlineEditor
       coding={block.coding}
-      onSolve={() =>
-        ctx.onBlockEvent?.({
-          lessonId: ctx.lessonId,
-          blockId: block.id,
-          type: "solved",
-        })
-      }
+      onSolve={() => {
+        emit({ type: "code_passed", lessonId: ctx.lessonId, blockId: block.id, language: block.coding.language });
+        emit({ type: "block_completed", lessonId: ctx.lessonId, blockId: block.id, blockType: block.type });
+        ctx.onBlockEvent?.({ lessonId: ctx.lessonId, blockId: block.id, type: "solved" });
+      }}
     />
   ),
 
   "mastery-assessment": (block, ctx) => (
     <Exercises
       exercises={block.exercises}
-      onMasteryChange={(pct) =>
-        ctx.onBlockEvent?.({
-          lessonId: ctx.lessonId,
-          blockId: block.id,
-          type: "mastery",
-          payload: { pct },
-        })
-      }
+      onMasteryChange={(pct) => {
+        const threshold = block.masteryThreshold ?? 80;
+        const passed = pct >= threshold;
+        emit({ type: "quiz_completed", lessonId: ctx.lessonId, blockId: block.id, score: pct, passed, masteryThreshold: threshold });
+        if (passed) emit({ type: "block_completed", lessonId: ctx.lessonId, blockId: block.id, blockType: block.type });
+        ctx.onBlockEvent?.({ lessonId: ctx.lessonId, blockId: block.id, type: "mastery", payload: { pct } });
+      }}
     />
   ),
 
@@ -298,6 +296,30 @@ export interface LessonRendererProps {
 }
 
 export function LessonRenderer({ lesson, onBlockEvent }: LessonRendererProps) {
+  const viewedRef = React.useRef(new Set<string>());
+
+  React.useEffect(() => {
+    emit({ type: "lesson_started", lessonId: lesson.meta.id, lessonSlug: lesson.meta.slug });
+    const seen = viewedRef.current;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !seen.has(entry.target.id)) {
+            seen.add(entry.target.id);
+            const block = lesson.blocks.find((b) => b.id === entry.target.id);
+            if (block) emit({ type: "block_viewed", lessonId: lesson.meta.id, blockId: block.id, blockType: block.type });
+          }
+        });
+      },
+      { rootMargin: "-10% 0px -50% 0px" },
+    );
+    lesson.blocks.forEach((b) => {
+      const el = document.getElementById(b.id);
+      if (el) observer.observe(el);
+    });
+    return () => observer.disconnect();
+  }, [lesson]);
+
   return (
     <div className="flex flex-col gap-12">
       {lesson.blocks.map((block) => (
