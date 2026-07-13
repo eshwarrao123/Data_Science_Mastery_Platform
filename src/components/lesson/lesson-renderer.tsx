@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import type { LearningBlock } from "@/lib/curriculum/blocks";
+import type { LearningBlock, BlockType } from "@/lib/curriculum/blocks";
 import type { Lesson } from "@/lib/curriculum/types";
 import { TheoryBlocks } from "@/components/lesson/theory-blocks";
 import { InteractiveDiagram } from "@/components/lesson/interactive-diagram";
@@ -208,87 +208,84 @@ function StubRenderer({ block }: { block: LearningBlock }) {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Block registry                                                      */
+/*  Block renderer registry                                             */
+/*                                                                     */
+/*  To add a new block type:                                            */
+/*    1. Define the block variant in src/lib/curriculum/blocks.ts      */
+/*    2. Create its renderer function in this file (or import it)      */
+/*    3. Add one entry to BLOCK_REGISTRY below                         */
+/*  LessonRenderer requires no changes.                                */
 /* ------------------------------------------------------------------ */
 
-type BlockRendererProps<T extends LearningBlock> = {
-  block: T;
+export interface BlockRenderContext {
   lessonId: string;
   onBlockEvent?: (e: BlockEvent) => void;
+}
+
+type BlockRendererFn<T extends LearningBlock = LearningBlock> = (
+  block: T,
+  ctx: BlockRenderContext,
+) => React.ReactNode;
+
+type BlockRegistry = {
+  [K in BlockType]: BlockRendererFn<Extract<LearningBlock, { type: K }>>;
 };
 
-function renderBlock(
-  block: LearningBlock,
-  lessonId: string,
-  onBlockEvent?: (e: BlockEvent) => void,
-): React.ReactNode {
-  switch (block.type) {
-    case "lesson-intro":
-      return <LessonIntroRenderer block={block} />;
+const BLOCK_REGISTRY: BlockRegistry = {
+  "lesson-intro": (block) => <LessonIntroRenderer block={block} />,
 
-    case "theory-blocks":
-      return <TheoryBlocks blocks={block.blocks} />;
+  "theory-blocks": (block) => <TheoryBlocks blocks={block.blocks} />,
 
-    case "interactive-diagram":
-      return <InteractiveDiagram visual={block.visual} />;
+  "interactive-diagram": (block) => <InteractiveDiagram visual={block.visual} />,
 
-    case "worked-examples":
-      return <WorkedExamples examples={block.examples} />;
+  "worked-examples": (block) => <WorkedExamples examples={block.examples} />,
 
-    case "inline-code":
-      return (
-        <InlineEditor
-          coding={block.coding}
-          onSolve={() =>
-            onBlockEvent?.({
-              lessonId,
-              blockId: block.id,
-              type: "solved",
-            })
-          }
-        />
-      );
+  "inline-code": (block, ctx) => (
+    <InlineEditor
+      coding={block.coding}
+      onSolve={() =>
+        ctx.onBlockEvent?.({
+          lessonId: ctx.lessonId,
+          blockId: block.id,
+          type: "solved",
+        })
+      }
+    />
+  ),
 
-    case "mastery-assessment":
-      return (
-        <Exercises
-          exercises={block.exercises}
-          onMasteryChange={(pct) =>
-            onBlockEvent?.({
-              lessonId,
-              blockId: block.id,
-              type: "mastery",
-              payload: { pct },
-            })
-          }
-        />
-      );
+  "mastery-assessment": (block, ctx) => (
+    <Exercises
+      exercises={block.exercises}
+      onMasteryChange={(pct) =>
+        ctx.onBlockEvent?.({
+          lessonId: ctx.lessonId,
+          blockId: block.id,
+          type: "mastery",
+          payload: { pct },
+        })
+      }
+    />
+  ),
 
-    case "callout":
-      return <CalloutRenderer block={block} />;
+  callout: (block) => <CalloutRenderer block={block} />,
 
-    case "recap":
-      return <RecapRenderer block={block} />;
+  recap: (block) => <RecapRenderer block={block} />,
 
-    case "interview-questions":
-      return <InterviewQuestionsRenderer block={block} />;
+  "interview-questions": (block) => <InterviewQuestionsRenderer block={block} />,
 
-    // Future stubs — safe no-op fallback
-    case "checkpoint-mcq":
-    case "prediction":
-    case "coding-challenge":
-    case "flashcards":
-    case "dataset-preview":
-    case "algorithm-animation":
-      return <StubRenderer block={block} />;
+  // Future stubs — dev-only placeholder until renderers are built
+  "checkpoint-mcq": (block) => <StubRenderer block={block} />,
+  prediction: (block) => <StubRenderer block={block} />,
+  "coding-challenge": (block) => <StubRenderer block={block} />,
+  flashcards: (block) => <StubRenderer block={block} />,
+  "dataset-preview": (block) => <StubRenderer block={block} />,
+  "algorithm-animation": (block) => <StubRenderer block={block} />,
+};
 
-    default: {
-      // Exhaustiveness guard — TypeScript will error if a new block type is
-      // added to the union without being handled here.
-      const _: never = block;
-      return null;
-    }
-  }
+function resolveBlock(block: LearningBlock, ctx: BlockRenderContext): React.ReactNode {
+  // Cast is sound: registry key K guarantees Extract<LearningBlock,{type:K}>
+  const render = BLOCK_REGISTRY[block.type] as BlockRendererFn;
+  return render(block, ctx);
 }
 
 /* ------------------------------------------------------------------ */
@@ -314,7 +311,7 @@ export function LessonRenderer({ lesson, onBlockEvent }: LessonRendererProps) {
               {block.tocLabel}
             </h2>
           )}
-          {renderBlock(block, lesson.meta.id, onBlockEvent)}
+          {resolveBlock(block, { lessonId: lesson.meta.id, onBlockEvent })}
         </section>
       ))}
     </div>
