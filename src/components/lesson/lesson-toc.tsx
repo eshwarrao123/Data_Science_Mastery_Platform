@@ -21,8 +21,13 @@ interface LessonTocProps {
   course: Course;
   activeModuleSlug: string;
   activeLessonSlug: string;
+  // Legacy path — fixed step index
   currentStep: number;
   onStepClick: (step: number) => void;
+  // Normalized path — block-derived entries (presence switches the TOC mode)
+  blockTocEntries?: { id: string; label: string }[];
+  activeBlockId?: string;
+  onBlockClick?: (id: string) => void;
 }
 
 export function LessonToc({
@@ -31,6 +36,9 @@ export function LessonToc({
   activeLessonSlug,
   currentStep,
   onStepClick,
+  blockTocEntries,
+  activeBlockId,
+  onBlockClick,
 }: LessonTocProps) {
   const lessons = useProgress((s) => s.lessons);
   const [openModules, setOpenModules] = React.useState<string[]>([activeModuleSlug]);
@@ -46,46 +54,80 @@ export function LessonToc({
       aria-label="Lesson navigation"
       className="flex flex-col h-full overflow-y-auto"
     >
-      {/* Lesson steps */}
+      {/* Lesson steps / block TOC */}
       <div className="p-4 border-b border-[var(--border-color)]">
         <div className="text-[10px] font-semibold uppercase tracking-widest text-[var(--text-muted)] mb-3">
           This Lesson
         </div>
         <div className="flex flex-col gap-0.5">
-          {STEPS.map((step, i) => {
-            const done = i < currentStep;
-            const active = i === currentStep;
-            return (
-              <button
-                key={step}
-                onClick={() => onStepClick(i)}
-                className={cn(
-                  "flex items-center gap-2.5 px-3 py-2 rounded-lg text-left text-xs transition-colors focus-ring w-full",
-                  active
-                    ? "bg-[var(--bg-subtle)] text-[var(--text-primary)] font-medium"
-                    : done
-                    ? "text-emerald-500 hover:bg-[var(--bg-subtle)]"
-                    : "text-[var(--text-muted)] hover:bg-[var(--bg-subtle)] hover:text-[var(--text-secondary)]",
-                )}
-                aria-current={active ? "step" : undefined}
-              >
-                {done ? (
-                  <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-500" />
-                ) : active ? (
-                  <motion.div
-                    animate={{ scale: [1, 1.2, 1] }}
-                    transition={{ repeat: Infinity, duration: 2 }}
-                    className="h-3.5 w-3.5 rounded-full border-2 border-[var(--text-primary)] shrink-0"
-                  />
-                ) : (
-                  <Circle className="h-3.5 w-3.5 shrink-0 text-[var(--border-color)]" />
-                )}
-                <span className="text-[11px]">
-                  {i + 1}. {step}
-                </span>
-              </button>
-            );
-          })}
+          {blockTocEntries ? (
+            /* ── Normalized: block-derived entries ── */
+            blockTocEntries.map((entry, i) => {
+              const active = entry.id === activeBlockId;
+              return (
+                <button
+                  key={entry.id}
+                  onClick={() => onBlockClick?.(entry.id)}
+                  className={cn(
+                    "flex items-center gap-2.5 px-3 py-2 rounded-lg text-left text-xs transition-colors focus-ring w-full",
+                    active
+                      ? "bg-[var(--bg-subtle)] text-[var(--text-primary)] font-medium"
+                      : "text-[var(--text-muted)] hover:bg-[var(--bg-subtle)] hover:text-[var(--text-secondary)]",
+                  )}
+                  aria-current={active ? "step" : undefined}
+                >
+                  {active ? (
+                    <motion.div
+                      animate={{ scale: [1, 1.2, 1] }}
+                      transition={{ repeat: Infinity, duration: 2 }}
+                      className="h-3.5 w-3.5 rounded-full border-2 border-[var(--text-primary)] shrink-0"
+                    />
+                  ) : (
+                    <Circle className="h-3.5 w-3.5 shrink-0 text-[var(--border-color)]" />
+                  )}
+                  <span className="text-[11px]">
+                    {i + 1}. {entry.label}
+                  </span>
+                </button>
+              );
+            })
+          ) : (
+            /* ── Legacy: fixed STEPS ── */
+            STEPS.map((step, i) => {
+              const done = i < currentStep;
+              const active = i === currentStep;
+              return (
+                <button
+                  key={step}
+                  onClick={() => onStepClick(i)}
+                  className={cn(
+                    "flex items-center gap-2.5 px-3 py-2 rounded-lg text-left text-xs transition-colors focus-ring w-full",
+                    active
+                      ? "bg-[var(--bg-subtle)] text-[var(--text-primary)] font-medium"
+                      : done
+                      ? "text-emerald-500 hover:bg-[var(--bg-subtle)]"
+                      : "text-[var(--text-muted)] hover:bg-[var(--bg-subtle)] hover:text-[var(--text-secondary)]",
+                  )}
+                  aria-current={active ? "step" : undefined}
+                >
+                  {done ? (
+                    <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-500" />
+                  ) : active ? (
+                    <motion.div
+                      animate={{ scale: [1, 1.2, 1] }}
+                      transition={{ repeat: Infinity, duration: 2 }}
+                      className="h-3.5 w-3.5 rounded-full border-2 border-[var(--text-primary)] shrink-0"
+                    />
+                  ) : (
+                    <Circle className="h-3.5 w-3.5 shrink-0 text-[var(--border-color)]" />
+                  )}
+                  <span className="text-[11px]">
+                    {i + 1}. {step}
+                  </span>
+                </button>
+              );
+            })
+          )}
         </div>
       </div>
 

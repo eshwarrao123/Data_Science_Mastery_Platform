@@ -30,6 +30,12 @@ import { XpToast, CompletionModal, MasteryGateButton } from "@/components/lesson
 import { useProgress } from "@/lib/store/progress";
 import { useUi } from "@/lib/store/ui";
 import { getCourse, getLesson, nextLesson } from "@/lib/data/curriculum";
+import {
+  getLesson as getNormalizedLesson,
+  nextLesson as nextNormalizedLesson,
+} from "@/lib/curriculum";
+import { LessonRenderer } from "@/components/lesson/lesson-renderer";
+import type { BlockEvent } from "@/components/lesson/lesson-renderer";
 import { cn } from "@/lib/utils";
 
 const STEPS = [
@@ -51,10 +57,29 @@ export default function LessonPage() {
   const course = getCourse(params.courseSlug);
   const lesson = getLesson(params.courseSlug, params.moduleSlug, params.lessonSlug);
 
+  // Normalized lesson (block-based) — present when this lesson has been migrated
+  const normalizedLesson = getNormalizedLesson(
+    params.courseSlug,
+    params.moduleSlug,
+    params.lessonSlug,
+  );
+
   if (!course || !lesson) notFound();
 
   const [currentStep, setCurrentStep] = React.useState(0);
+  const [activeBlockId, setActiveBlockId] = React.useState<string>("");
   const [masteryPct, setMasteryPct] = React.useState(0);
+
+  // Derive TOC entries from normalized lesson blocks (those with tocLabel)
+  const blockTocEntries = React.useMemo(
+    () =>
+      normalizedLesson
+        ? normalizedLesson.blocks
+            .filter((b) => b.tocLabel)
+            .map((b) => ({ id: b.id, label: b.tocLabel! }))
+        : undefined,
+    [normalizedLesson],
+  );
   const [showCompletion, setShowCompletion] = React.useState(false);
   const [completing, setCompleting] = React.useState(false);
   const [leftOpen, setLeftOpen] = React.useState(true);
@@ -69,6 +94,7 @@ export default function LessonPage() {
   }, [lesson.slug, startLesson]);
 
   const next = nextLesson(params.courseSlug, params.moduleSlug, params.lessonSlug);
+  const nextNorm = nextNormalizedLesson(params.lessonSlug);
 
   const handleComplete = async () => {
     if (masteryPct < 80) return;
@@ -80,19 +106,29 @@ export default function LessonPage() {
     setShowCompletion(true);
   };
 
+  const handleBlockEvent = (e: BlockEvent) => {
+    if (e.type === "mastery" && typeof e.payload?.pct === "number") {
+      setMasteryPct(e.payload.pct as number);
+    }
+    if (e.type === "solved") {
+      showXpToast(10);
+    }
+  };
+
   const scrollToStep = (idx: number) => {
     setCurrentStep(idx);
     document.getElementById(`step-${idx}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  // Track current step on scroll
+  // Legacy scroll-spy (fixed steps)
   React.useEffect(() => {
+    if (normalizedLesson) return;
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             const id = entry.target.id;
-            const idx = STEPS.findIndex((s) => `step-${STEPS.indexOf(s)}` === id);
+            const idx = STEPS.findIndex((_, i) => `step-${i}` === id);
             if (idx !== -1) setCurrentStep(idx);
           }
         });
@@ -104,7 +140,25 @@ export default function LessonPage() {
       if (el) observer.observe(el);
     });
     return () => observer.disconnect();
-  }, []);
+  }, [normalizedLesson]);
+
+  // Block-based scroll-spy (normalized lessons)
+  React.useEffect(() => {
+    if (!blockTocEntries?.length) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) setActiveBlockId(entry.target.id);
+        });
+      },
+      { rootMargin: "-20% 0px -70% 0px" },
+    );
+    blockTocEntries.forEach(({ id }) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+    return () => observer.disconnect();
+  }, [blockTocEntries]);
 
   return (
     <>
@@ -114,7 +168,9 @@ export default function LessonPage() {
         lessonTitle={lesson.title}
         xpEarned={lesson.xpReward}
         nextLesson={
-          next
+          normalizedLesson && nextNorm
+            ? { href: `/course/${nextNorm.courseSlug}/${nextNorm.moduleSlug}/${nextNorm.slug}`, title: nextNorm.title }
+            : next
             ? { href: `/course/${next.courseSlug}/${next.moduleSlug}/${next.lessonSlug}`, title: next.title }
             : null
         }
@@ -149,6 +205,12 @@ export default function LessonPage() {
                 activeLessonSlug={params.lessonSlug}
                 currentStep={currentStep}
                 onStepClick={scrollToStep}
+                blockTocEntries={blockTocEntries}
+                activeBlockId={activeBlockId}
+                onBlockClick={(id) => {
+                  setActiveBlockId(id);
+                  document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+                }}
               />
             </motion.aside>
           )}
@@ -197,7 +259,42 @@ export default function LessonPage() {
           </div>
 
           <div className="max-w-3xl mx-auto px-6 py-10 flex flex-col gap-16">
-            {/* ─── STEP 1: Introduction ─────────────────────────────── */}
+            {normalizedLesson ? (
+              /* ── Normalized block-based path ──────────────────────── */
+              <>
+                {/* Lesson header (title + metadata) */}
+                <div>
+                  <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-[var(--text-primary)] mb-4">
+                    {normalizedLesson.meta.title}
+                  </h1>
+                  <div className="flex flex-wrap items-center gap-2 mb-2">
+                    <Badge variant="muted">
+                      <Clock className="h-3 w-3" />
+                      {normalizedLesson.meta.estimatedTime}
+                    </Badge>
+                    <Badge
+                      variant={
+                        normalizedLesson.meta.difficulty === "Beginner"
+                          ? "success"
+                          : normalizedLesson.meta.difficulty === "Intermediate"
+                          ? "warning"
+                          : "error"
+                      }
+                    >
+                      {normalizedLesson.meta.difficulty}
+                    </Badge>
+                    <Badge variant="muted">⚡ {normalizedLesson.meta.xpReward} XP</Badge>
+                  </div>
+                </div>
+                <LessonRenderer lesson={normalizedLesson} onBlockEvent={handleBlockEvent} />
+                <MasteryGateButton
+                  masteryPct={masteryPct}
+                  onComplete={handleComplete}
+                  loading={completing}
+                />
+              </>
+            ) : (
+            <>
             <section id="step-0" aria-labelledby="step0-title">
               <SectionLabel step={1} label="Introduction" />
 
@@ -409,6 +506,8 @@ export default function LessonPage() {
                 loading={completing}
               />
             </section>
+            </> /* end legacy path */
+            )}
           </div>
         </main>
 
