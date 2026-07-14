@@ -7,8 +7,16 @@ export const pythonCourse: CourseMeta = {
   description:
     "Start from absolute zero. By the end you'll write clean, idiomatic Python that any data team would be proud of.",
   difficulty: "Beginner",
-  estimatedHours: 18,
+  estimatedHours: 32,
   category: "Programming",
-  orderIndex: 1,
-  moduleOrder: ["foundations"],
+  orderIndex: 2,
+  moduleOrder: [
+    "foundations",
+    "control-flow",
+    "functions",
+    "data-structures",
+    "oop",
+    "error-handling",
+    "python-ds-tools",
+  ],
 };

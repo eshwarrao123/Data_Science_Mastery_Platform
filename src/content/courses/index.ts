@@ -7,9 +7,24 @@
 /*                                                                     */
 /*  To add a new course:                                               */
 /*    1. Create src/content/courses/<slug>/index.ts                    */
-/*    2. Add one import line below — nothing else changes.             */
+/*    2. Uncomment (or add) one import line below — nothing else.      */
 /* ------------------------------------------------------------------ */
 
+/* ── Tier 1: Active (course has lesson content) ───────────────────── */
 import "./python/index";
 import "./data-analysis/index";
-// import "./sql/index";             ← future courses follow the same pattern
+
+/* ── Tier 2: Registered (course metadata only, lessons coming) ─────── */
+import "./foundations/index";
+import "./math-statistics/index";
+import "./sql/index";
+import "./visualization/index";
+import "./machine-learning/index";
+import "./deep-learning/index";
+import "./big-data/index";
+import "./mlops/index";
+import "./generative-ai/index";
+import "./rag/index";
+import "./agentic-ai/index";
+import "./projects/index";
+import "./career/index";
