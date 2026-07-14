@@ -52,12 +52,20 @@ export function Sidebar() {
   const width = collapsed ? 64 : 256;
 
   return (
-    <motion.aside
-      animate={{ width }}
-      transition={{ type: "spring", stiffness: 260, damping: 28 }}
-      className="hidden md:flex flex-col fixed left-0 top-16 bottom-0 z-40 border-r border-[var(--border-color)] bg-[var(--bg-elevated)] overflow-hidden"
-      aria-label="Main navigation"
-    >
+    <>
+      {/* Layout spacer — in flex flow, reserves the sidebar's animated width so main content is never blocked */}
+      <motion.div
+        animate={{ width }}
+        transition={{ type: "spring", stiffness: 260, damping: 28 }}
+        className="hidden md:block shrink-0"
+        aria-hidden
+      />
+      <motion.aside
+        animate={{ width }}
+        transition={{ type: "spring", stiffness: 260, damping: 28 }}
+        className="hidden md:flex flex-col fixed left-0 top-16 bottom-0 z-40 border-r border-[var(--border-color)] bg-[var(--bg-sidebar)] overflow-hidden"
+        aria-label="Main navigation"
+      >
       {/* User card */}
       <AnimatePresence initial={false}>
         {!collapsed && (
@@ -103,8 +111,8 @@ export function Sidebar() {
               className={cn(
                 "flex items-center gap-3 mx-2 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors focus-ring",
                 active
-                  ? "bg-[var(--bg-subtle)] text-[var(--text-primary)]"
-                  : "text-[var(--text-muted)] hover:bg-[var(--bg-subtle)] hover:text-[var(--text-secondary)]",
+                  ? "bg-[var(--bg-elevated)] text-[var(--text-primary)] shadow-sm"
+                  : "text-[var(--text-muted)] hover:bg-[var(--bg-elevated)]/50 hover:text-[var(--text-secondary)]",
               )}
               aria-current={active ? "page" : undefined}
             >
@@ -160,7 +168,7 @@ export function Sidebar() {
         aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
         className={cn(
           "absolute top-3 -right-3 z-10",
-          "h-6 w-6 rounded-full border border-[var(--border-color)] bg-[var(--bg-elevated)]",
+          "h-6 w-6 rounded-full border border-[var(--border-color)] bg-[var(--bg-sidebar)]",
           "flex items-center justify-center",
           "hover:bg-[var(--bg-subtle)] transition-colors focus-ring",
         )}
@@ -171,7 +179,8 @@ export function Sidebar() {
           <ChevronLeft className="h-3 w-3 text-[var(--text-muted)]" />
         )}
       </button>
-    </motion.aside>
+      </motion.aside>
+    </>
   );
 }
 

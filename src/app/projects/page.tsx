@@ -164,7 +164,7 @@ export default function ProjectsPage() {
   return (
     <div className="flex min-h-screen">
       <Sidebar />
-      <main className="flex-1 md:ml-64 px-4 md:px-8 py-8 max-w-5xl">
+      <main className="flex-1 min-w-0 px-4 md:px-8 py-8 max-w-5xl">
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
           <p className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)] mb-2">Projects</p>
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-[var(--text-primary)] mb-3">

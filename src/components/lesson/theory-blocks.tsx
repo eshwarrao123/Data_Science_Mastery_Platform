@@ -141,12 +141,12 @@ function WarningBlock({ title, content }: { title: string; content: string }) {
 
 export function TheoryBlocks({ blocks }: { blocks: TheoryBlock[] }) {
   return (
-    <div className="lesson-prose flex flex-col">
+    <div className="lesson-prose flex flex-col gap-4">
       {blocks.map((block, i) => {
         switch (block.type) {
           case "text":
             return (
-              <motion.p
+              <motion.div
                 key={i}
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
@@ -155,7 +155,7 @@ export function TheoryBlocks({ blocks }: { blocks: TheoryBlock[] }) {
                 className="text-[var(--text-secondary)] leading-relaxed text-[1.0125rem]"
               >
                 {annotateGlossary(block.content)}
-              </motion.p>
+              </motion.div>
             );
           case "analogy":
             return <AnalogyBlock key={i} title={block.title} content={block.content} />;

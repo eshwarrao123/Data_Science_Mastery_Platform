@@ -130,7 +130,7 @@ function SingleExample({ example }: { example: WorkedExample }) {
               <motion.div
                 key={`${entry.stepIdx}-${i}`}
                 initial={entry.stepIdx === step && i >= revealedLines.length - currentStep.code.split("\n").length ? { opacity: 0, backgroundColor: "rgba(16,185,129,0.15)" } : false}
-                animate={{ opacity: 1, backgroundColor: "transparent" }}
+                animate={{ opacity: 1, backgroundColor: "rgba(16,185,129,0)" }}
                 transition={{ duration: 0.4, delay: (i % currentStep.code.split("\n").length) * 0.04 }}
                 className={cn(
                   "px-2 rounded-sm",
