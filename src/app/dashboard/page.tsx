@@ -25,7 +25,7 @@ import { Badge } from "@/components/ui/badge";
 import { CircularProgress } from "@/components/ui/progress";
 import { Sidebar } from "@/components/layout/sidebar";
 import { useProgress, completedCount } from "@/lib/store/progress";
-import { allLessons } from "@/lib/data/curriculum";
+import { allLessons } from "@/lib/curriculum";
 import { cn } from "@/lib/utils";
 
 /* ══════════════════════════════════════════════════════════════════

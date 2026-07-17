@@ -33,6 +33,17 @@ interface ModuleEntry {
 
 const _courses = new Map<string, CourseEntry>();
 
+/**
+ * Registration anomalies recorded as they happen. The Map-based store
+ * silently overwrites duplicate slugs, so collisions are logged here for
+ * the validator instead of being lost.
+ */
+const _registrationIssues: string[] = [];
+
+export function getRegistrationIssues(): readonly string[] {
+  return _registrationIssues;
+}
+
 /* ------------------------------------------------------------------ */
 /*  Registration API (called by content files)                          */
 /* ------------------------------------------------------------------ */
@@ -56,7 +67,15 @@ export function registerCourse(
     entry.course = course;
   }
 
+  const seenModules = new Set<string>();
   for (const { module, lessons } of modules) {
+    if (seenModules.has(module.slug)) {
+      _registrationIssues.push(
+        `Course "${course.slug}": module slug "${module.slug}" registered twice in one call`,
+      );
+    }
+    seenModules.add(module.slug);
+
     let modEntry = entry.modules.get(module.slug);
     if (!modEntry) {
       modEntry = { module, lessons: new Map() };
@@ -65,6 +84,11 @@ export function registerCourse(
       modEntry.module = module;
     }
     for (const lesson of lessons) {
+      if (modEntry.lessons.has(lesson.meta.slug)) {
+        _registrationIssues.push(
+          `Module "${module.id}": lesson slug "${lesson.meta.slug}" registered twice — later registration overwrote the earlier one`,
+        );
+      }
       modEntry.lessons.set(lesson.meta.slug, lesson);
     }
   }
@@ -184,4 +208,22 @@ export function nextLesson(lessonSlug: string): LessonRef | null {
   const idx = flat.findIndex((l) => l.slug === lessonSlug);
   if (idx === -1 || idx === flat.length - 1) return null;
   return flat[idx + 1];
+}
+
+/**
+ * Returns the LessonRef immediately preceding the given lesson slug,
+ * respecting module and course boundaries.
+ */
+export function prevLesson(lessonSlug: string): LessonRef | null {
+  const flat = allLessons();
+  const idx = flat.findIndex((l) => l.slug === lessonSlug);
+  if (idx <= 0) return null;
+  return flat[idx - 1];
+}
+
+/** Resolve a lesson by its dotted ID (`course.module.lesson-slug`). */
+export function getLessonById(id: string): Lesson | null {
+  const parts = id.split(".");
+  if (parts.length !== 3) return null;
+  return getLesson(parts[0], parts[1], parts[2]);
 }

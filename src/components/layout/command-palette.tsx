@@ -14,7 +14,7 @@ import {
   X,
 } from "lucide-react";
 import { useUi } from "@/lib/store/ui";
-import { allLessons, curriculum } from "@/lib/data/curriculum";
+import { allLessons } from "@/lib/curriculum";
 import { cn } from "@/lib/utils";
 
 interface ResultItem {

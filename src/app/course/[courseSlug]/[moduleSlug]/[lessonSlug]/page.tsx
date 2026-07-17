@@ -40,14 +40,10 @@ import {
   getModule,
   getLesson,
   nextLesson,
-} from "@/lib/data/curriculum";
-import {
-  getLesson as getNormalizedLesson,
-  nextLesson as nextNormalizedLesson,
+  prevLesson,
 } from "@/lib/curriculum";
 import type { Lesson as NormalizedLesson } from "@/lib/curriculum";
 import type {
-  Lesson as LegacyLesson,
   TheoryBlock,
   LessonVisual,
   WorkedExample,
@@ -284,101 +280,6 @@ function normalizedToWorkspace(lesson: NormalizedLesson): WorkspaceModel {
   };
 }
 
-/* ── Converter: legacy step-based lesson → workspace model ─────────── */
-
-function legacyToWorkspace(lesson: LegacyLesson): WorkspaceModel {
-  const blocks: LeftPanelBlock[] = [];
-
-  blocks.push({
-    kind: "lesson-header",
-    title: lesson.title,
-    difficulty: lesson.difficulty,
-    xpReward: lesson.xpReward,
-    estimatedTime: lesson.estimatedTime,
-    hook: lesson.step1Intro.hook,
-  });
-  if (lesson.step1Intro.objectives.length)
-    blocks.push({ kind: "objectives", objectives: lesson.step1Intro.objectives });
-  blocks.push({
-    kind: "context-cards",
-    what: lesson.step1Intro.what,
-    why: lesson.step1Intro.why,
-    whereUsed: lesson.step1Intro.whereUsed,
-    prerequisites: lesson.prerequisites,
-  });
-  if (lesson.step1Intro.realWorldApps.length)
-    blocks.push({ kind: "realworld", apps: lesson.step1Intro.realWorldApps });
-
-  if (lesson.step2Theory.length) {
-    blocks.push({ kind: "section-divider", id: "section-theory" });
-    blocks.push({ kind: "theory", blocks: lesson.step2Theory });
-  }
-
-  blocks.push({ kind: "section-divider", id: "section-visual" });
-  blocks.push({ kind: "diagram", visual: lesson.step3Visual });
-
-  if (lesson.step4WorkedExamples.length) {
-    blocks.push({ kind: "section-divider", id: "section-worked" });
-    blocks.push({ kind: "worked-examples", examples: lesson.step4WorkedExamples });
-  }
-
-  blocks.push({ kind: "section-divider", id: "section-coding" });
-  blocks.push({ kind: "challenge", coding: lesson.step5InlineCoding });
-
-  blocks.push({ kind: "section-divider", id: "section-exercises" });
-  blocks.push({ kind: "exercises", exercises: lesson.step6Exercises });
-
-  if (lesson.interviewQuestions.length) {
-    blocks.push({ kind: "section-divider", id: "section-interview" });
-    blocks.push({ kind: "interview", questions: lesson.interviewQuestions });
-  }
-
-  return {
-    meta: {
-      title: lesson.title,
-      difficulty: lesson.difficulty,
-      xpReward: lesson.xpReward,
-      estimatedTime: lesson.estimatedTime,
-    },
-    blocks,
-    coding: lesson.step5InlineCoding,
-    lessonId: lesson.id,
-    codingBlockId: "inline-practice",
-    exercisesBlockId: "exercises",
-  };
-}
-
-/* ══════════════════════════════════════════════════════════════════
-   PREVIOUS-LESSON HELPER (walks the legacy course tree)
-   ══════════════════════════════════════════════════════════════════ */
-
-type NavRef = {
-  courseSlug: string;
-  moduleSlug: string;
-  lessonSlug: string;
-  title: string;
-};
-
-function computePrev(
-  course: NonNullable<ReturnType<typeof getCourse>>,
-  moduleSlug: string,
-  lessonSlug: string,
-): NavRef | null {
-  let prev: NavRef | null = null;
-  for (const mod of course.modules) {
-    for (const l of mod.lessons) {
-      if (mod.slug === moduleSlug && l.slug === lessonSlug) return prev;
-      prev = {
-        courseSlug: course.slug,
-        moduleSlug: mod.slug,
-        lessonSlug: l.slug,
-        title: l.title,
-      };
-    }
-  }
-  return null;
-}
-
 /* ══════════════════════════════════════════════════════════════════
    RESIZE HOOK — draggable vertical divider (native listeners)
    ══════════════════════════════════════════════════════════════════ */
@@ -466,7 +367,7 @@ function LeftBlock({
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[var(--text-primary)] mb-3">
             {block.title}
           </h1>
-          <p className="text-base text-[var(--text-primary)] leading-relaxed max-w-2xl">
+          <p className="text-base text-secondary leading-relaxed max-w-2xl">
             {block.hook}
           </p>
         </div>
@@ -826,26 +727,18 @@ export default function LessonPage() {
 
   const course = getCourse(params.courseSlug);
   const mod = getModule(params.courseSlug, params.moduleSlug);
-  const legacyLesson = getLesson(
-    params.courseSlug,
-    params.moduleSlug,
-    params.lessonSlug,
-  );
-  const normalizedLesson = getNormalizedLesson(
+  const lesson = getLesson(
     params.courseSlug,
     params.moduleSlug,
     params.lessonSlug,
   );
 
-  if (!course || !legacyLesson) notFound();
+  if (!course || !lesson) notFound();
 
   /* — Build the workspace model once per lesson (stable → Monaco never
        remounts, editor state / cursor / undo / output all survive scroll) — */
   const model = React.useMemo<WorkspaceModel>(
-    () =>
-      normalizedLesson
-        ? normalizedToWorkspace(normalizedLesson)
-        : legacyToWorkspace(legacyLesson!),
+    () => normalizedToWorkspace(lesson!),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [params.lessonSlug],
   );
@@ -884,11 +777,11 @@ export default function LessonPage() {
   const showXpToast = useUi((s) => s.showXpToast);
 
   React.useEffect(() => {
-    startLesson(legacyLesson!.slug);
+    startLesson(lesson!.meta.slug);
     emit({
       type: "lesson_started",
       lessonId: model.lessonId,
-      lessonSlug: legacyLesson!.slug,
+      lessonSlug: lesson!.meta.slug,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.lessonSlug]);
@@ -916,28 +809,16 @@ export default function LessonPage() {
     return () => observer.disconnect();
   }, [sectionIds]);
 
-  /* — Navigation refs — */
-  const prev = React.useMemo(
-    () => computePrev(course!, params.moduleSlug, params.lessonSlug),
-    [course, params.moduleSlug, params.lessonSlug],
-  );
-  const legacyNext = nextLesson(
-    params.courseSlug,
-    params.moduleSlug,
-    params.lessonSlug,
-  );
-  const normNext = nextNormalizedLesson(params.lessonSlug);
+  /* — Navigation refs (derived from curriculum order in the registry) — */
+  const prev = prevLesson(params.lessonSlug);
+  const next = nextLesson(params.lessonSlug);
 
-  const nextHref =
-    normalizedLesson && normNext
-      ? `/course/${normNext.courseSlug}/${normNext.moduleSlug}/${normNext.slug}`
-      : legacyNext
-      ? `/course/${legacyNext.courseSlug}/${legacyNext.moduleSlug}/${legacyNext.lessonSlug}`
-      : null;
-  const nextTitle =
-    normalizedLesson && normNext ? normNext.title : legacyNext?.title ?? null;
+  const nextHref = next
+    ? `/course/${next.courseSlug}/${next.moduleSlug}/${next.slug}`
+    : null;
+  const nextTitle = next?.title ?? null;
   const prevHref = prev
-    ? `/course/${prev.courseSlug}/${prev.moduleSlug}/${prev.lessonSlug}`
+    ? `/course/${prev.courseSlug}/${prev.moduleSlug}/${prev.slug}`
     : null;
 
   /* — Interaction handlers (preserve analytics + XP wiring) — */
@@ -986,14 +867,14 @@ export default function LessonPage() {
     if (masteryPct < 80) return;
     setCompleting(true);
     await new Promise((r) => setTimeout(r, 400));
-    completeLesson(legacyLesson!.slug, Math.round(masteryPct), legacyLesson!.xpReward);
+    completeLesson(lesson!.meta.slug, Math.round(masteryPct), lesson!.meta.xpReward);
     emit({
       type: "lesson_completed",
       lessonId: model.lessonId,
-      lessonSlug: legacyLesson!.slug,
+      lessonSlug: lesson!.meta.slug,
       finalScore: Math.round(masteryPct),
     });
-    showXpToast(legacyLesson!.xpReward);
+    showXpToast(lesson!.meta.xpReward);
     setCompleting(false);
     setShowCompletion(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1008,7 +889,7 @@ export default function LessonPage() {
       <CompletionModal
         isOpen={showCompletion}
         lessonTitle={model.meta.title}
-        xpEarned={legacyLesson!.xpReward}
+        xpEarned={lesson!.meta.xpReward}
         nextLesson={nextHref && nextTitle ? { href: nextHref, title: nextTitle } : null}
         onClose={() => setShowCompletion(false)}
       />
@@ -1016,7 +897,7 @@ export default function LessonPage() {
         open={tutorOpen}
         onClose={() => setTutorOpen(false)}
         lessonTitle={model.meta.title}
-        lessonSlug={legacyLesson!.slug}
+        lessonSlug={lesson!.meta.slug}
       />
 
       {/* ── Full-viewport workspace shell ── */}

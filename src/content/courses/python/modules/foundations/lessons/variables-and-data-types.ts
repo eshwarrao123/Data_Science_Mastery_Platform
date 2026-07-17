@@ -415,7 +415,7 @@ print(f"Profitable: {is_profitable}")`,
     {
       id: "exercises",
       type: "mastery-assessment",
-      tocLabel: "Exercises",
+      tocLabel: "Quiz & Exercises",
       masteryThreshold: 80,
       exercises: [
         {
@@ -475,19 +475,19 @@ print(f"Profitable: {is_profitable}")`,
           id: "py01_code_01",
           difficulty: "Medium",
           prompt:
-            "Write a script that takes a temperature in Celsius (stored as a float variable) and prints it converted to Fahrenheit, formatted to 1 decimal place. Formula: F = C × 9/5 + 32. Use celsius = 37.0.",
-          starterCode: "celsius = 37.0\n# Your code here\n",
+            "Write a script that takes a price in US dollars (stored as a float variable) and prints it converted to euros, formatted to 2 decimal places. Formula: EUR = USD × 0.92. Use usd = 149.50.",
+          starterCode: "usd = 149.50\n# Your code here\n",
           solutionCode:
-            "celsius = 37.0\nfahrenheit = celsius * 9/5 + 32\nprint(f'{fahrenheit:.1f}')",
-          expectedOutput: "98.6",
+            "usd = 149.50\neur = usd * 0.92\nprint(f'{eur:.2f}')",
+          expectedOutput: "137.54",
           tests: [
             {
               name: "Output format",
-              description: "Output should be a single line: 98.6",
+              description: "Output should be a single line: 137.54",
             },
             {
               name: "Formula correctness",
-              description: "37°C must convert to exactly 98.6°F",
+              description: "$149.50 must convert to exactly 137.54 EUR at the 0.92 rate",
             },
           ],
         },
@@ -520,11 +520,82 @@ print(f"Profitable: {is_profitable}")`,
       questions: [
         {
           question:
-            "What is the difference between a mutable and an immutable type in Python? Give an example of each.",
+            "What is a variable in Python, and why does every program need them?",
           answer:
-            "Immutable types (int, float, str, tuple, frozenset) cannot be changed after creation — reassigning a variable creates a new object. Mutable types (list, dict, set) can be modified in-place. Example: strings are immutable, so s = 'hi'; s[0] = 'H' raises a TypeError. Lists are mutable, so lst = [1, 2]; lst[0] = 99 works fine.",
+            "A variable is a named label that points to a value stored in memory. It lets you give a value a meaningful name — like price or user_age — so you can reference and change it throughout your code instead of hard-coding the same literal everywhere. If a tax rate changes, you update one variable rather than hunting through the whole file. Variables are what make a program flexible: the same code runs on today's data and tomorrow's just by pointing the labels at new values.",
+        },
+        {
+          question:
+            "Python is dynamically typed. What does that mean, and what are the trade-offs for data science work?",
+          answer:
+            "Dynamic typing means you never declare a type — Python infers it from the value you assign, and a variable can even point to a different type later. You write x = 5 instead of int x = 5, which speeds up exploratory analysis in notebooks where you're constantly reshaping data. The trade-off is that type errors surface at runtime rather than being caught up front, so a column you assumed was numeric but is actually strings won't complain until the calculation fails. That's why many teams add type hints and use tools like mypy on production pipelines. In short, dynamic typing is a gift during exploration and a risk in production code that you manage with discipline.",
+        },
+        {
+          question:
+            "Why does 0.1 + 0.2 not equal exactly 0.3 in Python, and how would you handle money in a data pipeline because of it?",
+          answer:
+            "Floats are stored in binary using the IEEE 754 standard, and most decimal fractions — including 0.1 — have no exact binary representation, so Python stores the nearest approximation. When you add two approximations the tiny errors accumulate, giving results like 0.30000000000000004. This is a property of the hardware format, not a Python bug, and every language with IEEE 754 floats behaves the same way. For money I never rely on float equality: I either work in integer cents, or use Python's decimal.Decimal type which stores base-10 values exactly. When comparing floats generally, I compare within a small tolerance using something like math.isclose rather than ==. The practical rule is that floats are for measurement, not for exact accounting.",
         },
       ],
+    },
+
+    /* ---------------------------------------------------------------- */
+    /*  8 — Common Mistakes                                              */
+    /* ---------------------------------------------------------------- */
+    {
+      id: "common-mistakes",
+      type: "callout",
+      variant: "warning",
+      title: "Common Mistakes to Avoid",
+      content:
+        "1) Using = (assignment) where you meant == (comparison) inside an if — Python treats `if x = 5:` as a SyntaxError. 2) Assuming input() gives you a number — it always returns a str, so '25' + 5 raises a TypeError until you convert with int(). 3) Testing floats for exact equality: 0.1 + 0.2 == 0.3 is False; compare with a tolerance or use Decimal. 4) Writing True/False in lowercase — Python's booleans are capitalised, and true is just an undefined name. 5) Reusing a built-in name like list, str, or type as a variable, which quietly breaks that function for the rest of your program.",
+    },
+
+    /* ---------------------------------------------------------------- */
+    /*  9 — AI Tutor Prompts                                             */
+    /* ---------------------------------------------------------------- */
+    {
+      id: "ai-tutor",
+      type: "callout",
+      variant: "tip",
+      title: "Ask the AI Tutor",
+      content:
+        "Try these prompts in the AI Tutor panel: • 'ELI5: what is the difference between an int and a float?' • 'Quiz me on what type() returns for five different values.' • 'Show me a real bug caused by forgetting to convert a string to a number.' • 'Explain why 0.1 + 0.2 isn't 0.3 with a fresh analogy.' • 'Interview mode: ask me about dynamic typing and grade my answer.'",
+    },
+
+    /* ---------------------------------------------------------------- */
+    /*  10 — Glossary                                                    */
+    /* ---------------------------------------------------------------- */
+    {
+      id: "glossary",
+      type: "callout",
+      variant: "info",
+      title: "Glossary",
+      content:
+        "Variable — a named label pointing to a value in memory. Value — the actual data a variable points to. Data type — the kind of value (int, float, str, bool) that decides which operations are allowed. int — a whole number. float — a number with a decimal point. str — text inside quotes. bool — True or False. Dynamic typing — Python infers a variable's type from its value at runtime rather than requiring a declaration. Type conversion (casting) — changing a value from one type to another with int(), float(), or str(). f-string — a formatted string literal (prefixed with f) that embeds variables inside {}.",
+    },
+
+    /* ---------------------------------------------------------------- */
+    /*  11 — Recommended Resources                                       */
+    /* ---------------------------------------------------------------- */
+    {
+      id: "resources",
+      type: "callout",
+      variant: "info",
+      title: "Recommended Resources",
+      content:
+        "• Docs: the official Python tutorial section 'An Informal Introduction to Python' — numbers and strings from the source. • Read: 'Floating-Point Arithmetic: Issues and Limitations' in the Python docs for the full 0.1 + 0.2 story. • Practice: open a Python REPL and run type() on ten different values until the four primitive types feel automatic. • Next in DSM: you can store single values — next you'll work with text in depth in Strings & String Methods, the raw material of almost every messy dataset.",
+    },
+
+    /* ---------------------------------------------------------------- */
+    /*  12 — Recap                                                       */
+    /* ---------------------------------------------------------------- */
+    {
+      id: "recap",
+      type: "recap",
+      tocLabel: "Recap",
+      content:
+        "✓ A variable is a named label that points to a value in memory.\n✓ Python infers the data type automatically from the value you assign (dynamic typing).\n✓ The four primitive types are int, float, str, and bool.\n✓ Use type() to inspect any value's type at runtime.\n✓ Type conversion is explicit: int(), float(), and str() move values between types.\n✓ Floats are approximations, so never test them for exact equality.\n\nNext up: Strings & String Methods. You can now store text in a str — next you'll slice it, reshape it, and clean it with the methods you'll reach for every time a dataset arrives messy.",
     },
   ],
 };

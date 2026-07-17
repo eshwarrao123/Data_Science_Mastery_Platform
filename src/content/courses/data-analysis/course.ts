@@ -10,5 +10,5 @@ export const dataAnalysisCourse: CourseMeta = {
   estimatedHours: 18,
   category: "Data Analysis",
   orderIndex: 4,
-  moduleOrder: ["pandas-core"],
+  moduleOrder: ["pandas-core", "cleaning", "transformation", "eda"],
 };

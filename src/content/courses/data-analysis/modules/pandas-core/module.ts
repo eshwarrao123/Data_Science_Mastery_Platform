@@ -6,5 +6,12 @@ export const pandasCoreModule: ModuleMeta = {
   title: "Pandas Core",
   description:
     "DataFrames, Series, indexing, filtering, and the core pandas workflow.",
-  lessonOrder: ["pandas-dataframes"],
+  lessonOrder: [
+    "pandas-dataframes",
+    "series-and-index",
+    "data-selection",
+    "adding-modifying-columns",
+    "handling-missing-data",
+    "sorting-and-ranking",
+  ],
 };

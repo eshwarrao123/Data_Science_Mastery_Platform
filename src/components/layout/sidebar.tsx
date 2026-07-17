@@ -27,9 +27,9 @@ const NAV_ITEMS = [
   { href: "/curriculum", label: "Curriculum", icon: Map },
   { href: "/projects", label: "My Projects", icon: Briefcase },
   { href: "/interview-prep", label: "Interview Prep", icon: Code2 },
-  { href: "/profile?tab=bookmarks", label: "Bookmarks", icon: Bookmark },
-  { href: "/profile?tab=notes", label: "Notes", icon: FileText },
-  { href: "/profile?tab=settings", label: "Settings", icon: Settings },
+  { href: "/profile/bookmarks", label: "Bookmarks", icon: Bookmark },
+  { href: "/profile/notes", label: "Notes", icon: FileText },
+  { href: "/profile/settings", label: "Settings", icon: Settings },
 ];
 
 /* XP level thresholds */

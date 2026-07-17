@@ -366,10 +366,62 @@ print(f"Best subject: {best_subject}")`,
       tocLabel: "Interview Prep",
       questions: [
         {
-          question: "What is the difference between merge() and join() in pandas?",
-          answer: "Both combine DataFrames, but pd.merge() is more powerful and explicit — you specify the key columns and join type (inner, left, right, outer). df.join() is a convenience method that joins on the index by default and is less flexible. For most production code, prefer pd.merge() for clarity.",
+          question: "What is a pandas DataFrame, and how does it relate to a Series?",
+          answer: "A DataFrame is a 2-dimensional labeled data structure — rows and columns, like a programmable spreadsheet or SQL table. Each column is a pandas Series: a 1D labeled array backed by a NumPy array. All the columns share a single row Index, so you can think of a DataFrame as a dictionary of Series with a common index. When I select one column with df['col'] I get a Series back; selecting a list of columns with df[['a', 'b']] returns a DataFrame.",
+        },
+        {
+          question: "When would you use .loc[] versus .iloc[], and what happens when the index is not the default 0, 1, 2… range?",
+          answer: "I use .loc[] for label-based selection and .iloc[] for integer position-based selection. With the default RangeIndex the two look interchangeable, which hides the difference — but once the index is dates, IDs, or a shuffled subset after filtering, they diverge. df.loc[5] finds the row whose index label is 5, wherever it sits; df.iloc[5] returns the sixth row regardless of its label. A classic bug is filtering a DataFrame and then calling .loc[0] expecting the first row — if row 0 was filtered out, that raises a KeyError. When I want 'the first row of whatever this is', I reach for .iloc[0]; when I mean 'the row for this specific key', I use .loc[].",
+        },
+        {
+          question: "A colleague loops over DataFrame rows with iterrows() to compute a derived column and it's slow. Why, and what would you do instead?",
+          answer: "iterrows() runs a Python-level loop and materialises each row as a Series, so every iteration pays interpreter and object-creation overhead — on a million rows that's a million round trips out of the fast C layer. Vectorized column arithmetic like df['price'] * (1 - df['discount']) performs the whole computation inside NumPy's compiled loops, typically hundreds of times faster. My hierarchy is: vectorized column operations first, then NumPy functions like np.where or np.select for conditional logic, and .apply() only when the logic genuinely can't be vectorized — and even then I treat it as a flag to reconsider the approach. Row loops in pandas are almost always a design smell, not a performance tuning problem.",
         },
       ],
+    },
+
+    {
+      id: "common-mistakes",
+      type: "callout",
+      variant: "warning",
+      title: "Common Mistakes to Avoid",
+      content:
+        "1) Confusing df['col'] with df[['col']] — the first returns a Series, the second a one-column DataFrame; passing the wrong one to a function expecting the other causes shape errors. 2) Combining boolean conditions with Python's `and`/`or` instead of `&`/`|` — pandas raises 'The truth value of a Series is ambiguous'. Use & and | with each condition wrapped in parentheses. 3) Modifying a filtered slice without .copy() — df2 = df[mask] then df2['x'] = 1 triggers SettingWithCopyWarning and may silently not write where you think. 4) Calling .loc[0] after filtering and expecting the first row — the label 0 may be gone; use .iloc[0] for positional access. 5) Trusting read_csv dtypes blindly — a numeric column with one stray text value loads as object (strings), and every arithmetic operation on it breaks downstream.",
+    },
+
+    {
+      id: "ai-tutor",
+      type: "callout",
+      variant: "tip",
+      title: "Ask the AI Tutor",
+      content:
+        "Try these prompts in the AI Tutor panel: • 'ELI5: what is the difference between a DataFrame and a Series?' • 'Quiz me on .loc vs .iloc with tricky index examples.' • 'Show me a real bug caused by forgetting .copy() on a filtered DataFrame.' • 'Explain boolean masking with a fresh analogy.' • 'Interview mode: ask me to describe my first steps after loading an unfamiliar CSV.'",
+    },
+
+    {
+      id: "glossary",
+      type: "callout",
+      variant: "info",
+      title: "Glossary",
+      content:
+        "DataFrame — a 2D labeled table of rows and columns; the core pandas structure. Series — a 1D labeled array; every DataFrame column is one. Index — the row labels shared by all columns of a DataFrame. dtype — the data type of a column (int64, float64, object, bool, datetime64, category). Boolean mask — a Series of True/False values used to filter rows. .loc[] — label-based row/column selection. .iloc[] — integer position-based selection. Vectorized operation — an operation applied to a whole column at once inside NumPy's compiled code, instead of a Python loop. pd.read_csv() — the function that loads a CSV file into a DataFrame. SettingWithCopyWarning — pandas' warning that you may be writing to a temporary copy instead of the original DataFrame.",
+    },
+
+    {
+      id: "resources",
+      type: "callout",
+      variant: "info",
+      title: "Recommended Resources",
+      content:
+        "• Docs: the pandas User Guide chapter '10 minutes to pandas' — the official quick tour of DataFrames from the source. • Read: 'Indexing and selecting data' in the pandas docs for the full .loc/.iloc story, including the chained-indexing trap. • Practice: load any CSV you can find (bank statement export, Kaggle dataset) and run .shape, .head(), .info(), .describe() until the inspection ritual is automatic. • Next in DSM: you've met the DataFrame — next you'll zoom into its building block in Series & Index, where index alignment explains half of pandas' surprising behaviours.",
+    },
+
+    {
+      id: "recap",
+      type: "recap",
+      tocLabel: "Recap",
+      content:
+        "✓ A DataFrame is a 2D labeled table; every column is a Series sharing one row Index.\n✓ Inspect every new dataset with .shape, .head(), .info(), and .describe() before touching it.\n✓ df['col'] returns a Series; df[['col']] (a list of names) returns a DataFrame.\n✓ .loc[] selects by label, .iloc[] by integer position — they differ whenever the index isn't 0, 1, 2….\n✓ Filter rows with boolean masks, combining conditions with & and | (each in parentheses).\n✓ Prefer vectorized column operations over row loops — and use .copy() when you need an independent slice.\n\nNext up: Series & Index. Every DataFrame column you touched today is a Series — next you'll work with them directly and see how index alignment decides what happens when two Series meet in one expression.",
     },
   ],
 };

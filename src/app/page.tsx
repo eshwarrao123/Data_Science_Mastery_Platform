@@ -196,7 +196,7 @@ export default function HomePage() {
           variants={fadeUp}
           initial="hidden"
           animate="visible"
-          className="mt-6 text-lg sm:text-xl text-[var(--text-secondary)] max-w-xl mx-auto leading-relaxed"
+          className="mt-6 text-lg sm:text-xl text-primary max-w-xl mx-auto leading-relaxed"
         >
           One structured path — from spreadsheets to production ML models.
           Interactive lessons, built-in code editor, AI tutor, real projects.
@@ -863,7 +863,7 @@ export default function HomePage() {
               </Button>
             </Link>
             <Link href="/curriculum">
-              <Button size="lg" variant="secondary" className="h-12 px-7 text-base">
+              <Button size="lg" variant="primary" className="h-12 px-7 text-base">
                 Explore Curriculum
               </Button>
             </Link>

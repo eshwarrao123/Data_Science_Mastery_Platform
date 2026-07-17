@@ -21,7 +21,7 @@ import { Sidebar } from "@/components/layout/sidebar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ProgressBar } from "@/components/ui/progress";
-import { getCourse } from "@/lib/data/curriculum";
+import { getCourse } from "@/lib/curriculum";
 import { useProgress } from "@/lib/store/progress";
 import { cn } from "@/lib/utils";
 

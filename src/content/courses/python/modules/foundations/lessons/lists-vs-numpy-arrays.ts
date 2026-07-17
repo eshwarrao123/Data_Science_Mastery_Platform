@@ -124,7 +124,7 @@ export const listsVsNumpyArrays: Lesson = {
           { id: "list_flex", label: "Mixed types", sublabel: "[1, 'a', True]", detail: "Lists can hold any Python object. Useful for heterogeneous records before you reach the pandas/DataFrame stage.", x: 10, y: 48, accent: false },
           { id: "list_slow", label: "Slow math", sublabel: "for loop required", detail: "To double every element, you must loop: [x*2 for x in lst]. Each iteration is a Python function call — slow for large datasets.", x: 28, y: 48, accent: false },
           { id: "numpy_fast", label: "Vectorized math", sublabel: "arr * 2", detail: "arr * 2 calls a compiled C function. On 1 million elements, this is ~100× faster than a Python list comprehension.", x: 62, y: 48, accent: true },
-          { id: "numpy_dtype", label: "Single dtype", sublabel: ".dtype = int64", detail: "Every element is stored as the same C type. This memory contiguity is what allows BLAS/LAPACK to operate at CPU-native speed.", x: 82, y: 48, accent: true },
+          { id: "numpy_dtype", label: "Single dtype", sublabel: ".dtype = int64", detail: "Every element is stored as the same C type in one contiguous block — that's what lets NumPy's compiled math routines run at CPU-native speed. (The libraries doing that work are called BLAS/LAPACK — nice to know, not need to know.)", x: 82, y: 48, accent: true },
           { id: "numpy_2d", label: "2D & N-D", sublabel: "shape (rows, cols)", detail: "NumPy arrays can be multi-dimensional. A 2D array (matrix) has shape (rows, cols) and supports matrix multiplication, slicing rows/columns, and broadcasting.", x: 72, y: 74, accent: true },
           { id: "pandas", label: "pandas builds on NumPy", sublabel: "DataFrame columns = arrays", detail: "Every pandas Series is backed by a NumPy array. Every numerical DataFrame column is an ndarray under the hood. Understanding NumPy is mandatory for understanding pandas.", x: 47, y: 88, accent: true },
         ],
@@ -202,7 +202,7 @@ export const listsVsNumpyArrays: Lesson = {
             { code: "normalized = (credit_scores - min_val) / (max_val - min_val)", explanation: "Min-Max formula: (x - min) / (max - min). This maps every value to [0, 1]. NumPy applies this vectorized — no loop." },
             { code: "print(normalized.round(3))", explanation: "The customer with score 490 maps to 0.0, the one with 800 maps to 1.0. All others land between." },
           ],
-          output: "[0.290 0.742 0.516 0.    1.    0.387 0.858]",
+          output: "[0.290 0.742 0.516 0.    1.    0.387 0.855]",
         },
       ],
     },
@@ -264,7 +264,7 @@ print(f"In Fahrenheit: {temps_f.round(1)}")`,
     {
       id: "exercises",
       type: "mastery-assessment",
-      tocLabel: "Exercises",
+      tocLabel: "Quiz & Exercises",
       masteryThreshold: 80,
       exercises: [
         {
@@ -327,6 +327,22 @@ print(f"In Fahrenheit: {temps_f.round(1)}")`,
             { name: "No explicit loop", description: "Solution must use NumPy boolean masking and vectorized operations" },
           ],
         },
+        {
+          type: "mcq",
+          id: "py02_mcq_04",
+          difficulty: "Hard",
+          question:
+            "You run `prices = [10, 20, 30]` then `prices * 2`. What do you get?",
+          options: [
+            "[20, 40, 60]",
+            "[10, 20, 30, 10, 20, 30]",
+            "A TypeError",
+            "[12, 22, 32]",
+          ],
+          correctIndex: 1,
+          explanation:
+            "On a Python list, * means repetition, not element-wise math — so the list is duplicated end-to-end. To double each value you'd need a NumPy array (np.array(prices) * 2) or a comprehension. This surprise is exactly why numerical work uses NumPy.",
+        },
       ],
     },
 
@@ -336,10 +352,82 @@ print(f"In Fahrenheit: {temps_f.round(1)}")`,
       tocLabel: "Interview Prep",
       questions: [
         {
+          question:
+            "What is the core difference between a Python list and a NumPy array, and when would you choose each?",
+          answer:
+            "A Python list is heterogeneous and dynamic — it holds any mix of types and resizes freely, which makes it ideal for general-purpose collections and small, mixed records. A NumPy array is homogeneous and stored in a contiguous block of one C-level dtype, which makes it compact and fast for numerical work. I reach for a list when the data is small, mixed-type, or I'm just collecting items; I reach for a NumPy array the moment I need element-wise math, statistics, or multi-dimensional numeric data. In a data pipeline you often start with lists from parsing and convert to arrays (or a pandas column, which is array-backed) once the data is clean and numeric.",
+        },
+        {
+          question:
+            "Why is `arr * 2` on a NumPy array so much faster than `[x * 2 for x in lst]` on a list?",
+          answer:
+            "The list comprehension runs in the Python interpreter: for each element it does a bytecode loop iteration, a dynamic type check, and a boxed-object multiply, all of which carry per-element overhead. NumPy's arr * 2 is vectorized — the loop happens inside a single compiled C routine over a contiguous, single-dtype memory block, so there's no per-element Python overhead (the hardware can even process several elements per instruction — a bonus fact, not something interviewers expect at this level). On a million elements that's the difference between seconds and milliseconds. The trade-off is that the array must be homogeneous and the operation must be one NumPy supports, which is nearly always true for numeric data.",
+        },
+        {
           question: "Explain broadcasting in NumPy. Give an example.",
-          answer: "Broadcasting is NumPy's rule for performing arithmetic on arrays of different shapes without copying data. When shapes are compatible (trailing dimensions match or are 1), NumPy stretches the smaller array conceptually. Example: np.array([[1,2,3],[4,5,6]]) + np.array([10,20,30]) — the 1D array is broadcast across both rows, giving [[11,22,33],[14,25,36]].",
+          answer:
+            "Broadcasting is NumPy's rule for performing arithmetic on arrays of different shapes without copying data. When shapes are compatible (trailing dimensions match or are 1), NumPy stretches the smaller array conceptually. Example: np.array([[1,2,3],[4,5,6]]) + np.array([10,20,30]) — the 1D array is broadcast across both rows, giving [[11,22,33],[14,25,36]]. A scalar is the simplest case: arr * 2 broadcasts the single value 2 across every element, which is why element-wise scaling needs no loop.",
         },
       ],
+    },
+
+    /* ---------------------------------------------------------------- */
+    /*  8 — Common Mistakes                                              */
+    /* ---------------------------------------------------------------- */
+    {
+      id: "common-mistakes",
+      type: "callout",
+      variant: "warning",
+      title: "Common Mistakes to Avoid",
+      content:
+        "1) Expecting list * 2 to double the numbers — on a list it repeats the elements ([1,2]*2 is [1,2,1,2]); use a NumPy array for element-wise math. 2) Forgetting import numpy as np — np.array(...) raises a NameError without it. 3) Mixing types into an array: np.array([1, 2, 'x']) silently upcasts everything to strings, breaking later arithmetic. 4) Confusing .shape and len() on 2D arrays — len() gives only the number of rows, while .shape gives (rows, cols). 5) Assuming a slice is a copy: NumPy slices are VIEWS into the original array, so editing the slice edits the source; use .copy() when you need independence.",
+    },
+
+    /* ---------------------------------------------------------------- */
+    /*  9 — AI Tutor Prompts                                             */
+    /* ---------------------------------------------------------------- */
+    {
+      id: "ai-tutor",
+      type: "callout",
+      variant: "tip",
+      title: "Ask the AI Tutor",
+      content:
+        "Try these prompts in the AI Tutor panel: • 'ELI5: what does vectorization actually mean?' • 'Show me the same calculation done with a list loop and with a NumPy array, side by side.' • 'Quiz me on what .shape returns for a few different arrays.' • 'Give me a realistic dataset column and let me practise boolean masking on it.' • 'Interview mode: ask me why NumPy is faster than a list and grade my answer.'",
+    },
+
+    /* ---------------------------------------------------------------- */
+    /*  10 — Glossary                                                    */
+    /* ---------------------------------------------------------------- */
+    {
+      id: "glossary",
+      type: "callout",
+      variant: "info",
+      title: "Glossary",
+      content:
+        "List — a built-in, ordered, resizable Python collection that can hold mixed types. NumPy — the numerical computing library imported as np. Array (ndarray) — NumPy's fixed-dtype, grid-like container for numbers. dtype — the single data type every element of an array shares (e.g. int64, float64). shape — a tuple giving an array's dimensions, like (rows, cols). Vectorization — applying an operation to a whole array in compiled C with no Python loop. Element-wise — an operation applied independently to each element (arr * 2). Boolean masking — indexing an array with a True/False array to filter elements. Broadcasting — stretching a smaller array/scalar across a larger one during arithmetic. View — a slice that shares memory with the original array rather than copying it.",
+    },
+
+    /* ---------------------------------------------------------------- */
+    /*  11 — Recommended Resources                                       */
+    /* ---------------------------------------------------------------- */
+    {
+      id: "resources",
+      type: "callout",
+      variant: "info",
+      title: "Recommended Resources",
+      content:
+        "• Docs: the official 'NumPy: the absolute basics for beginners' guide covers arrays, dtypes, and indexing from the source. • Read: the NumPy 'Broadcasting' page for the full rules with diagrams. • Practice: take any list of numbers, convert it to an array, and compute .mean(), .max(), and a boolean-masked subset in a REPL. • Next in DSM: you've met arrays, the backbone of every data library — the deeper NumPy toolkit arrives in the later Python for Data Science module, once the Foundations are solid.",
+    },
+
+    /* ---------------------------------------------------------------- */
+    /*  12 — Recap                                                       */
+    /* ---------------------------------------------------------------- */
+    {
+      id: "recap",
+      type: "recap",
+      tocLabel: "Recap",
+      content:
+        "✓ Python lists are flexible, mixed-type, resizable collections — great for general use, slow for bulk math.\n✓ On a list, * repeats elements; it does not do element-wise arithmetic.\n✓ NumPy arrays are homogeneous, single-dtype containers built for numerical speed.\n✓ Vectorized operations like arr * 2 run in compiled C with no Python loop — often 10–100× faster.\n✓ Boolean masking (arr[arr > 30]) filters an array without a loop.\n✓ pandas and every major data library are built on NumPy arrays.\n\nNext up: you've completed Python Foundations. From here the curriculum builds on these primitives — variables, text, operators, conversion, and arrays — into the full data science workflow.",
     },
   ],
 };

@@ -19,10 +19,16 @@ import {
 } from "lucide-react";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Button } from "@/components/ui/button";
-import { curriculum } from "@/lib/data/curriculum";
+import { getAllCourses } from "@/lib/curriculum";
 import { useProgress } from "@/lib/store/progress";
 import { cn } from "@/lib/utils";
-import type { Course, Lesson } from "@/lib/types";
+import type { ResolvedCourse, LessonRef } from "@/lib/curriculum";
+
+/* Courses that have at least one authored lesson — metadata-only courses
+   stay in the "coming soon" lane until content lands. */
+const curriculum = getAllCourses().filter((c) =>
+  c.modules.some((m) => m.lessons.length > 0),
+);
 
 /* ─────────────────────────────────────────────────────────────────────────────
    SECTION DEFINITIONS
@@ -248,11 +254,11 @@ interface CourseStat {
   pct: number;
   isComplete: boolean;
   isStarted: boolean;
-  nextLesson: Lesson | null;
+  nextLesson: LessonRef | null;
 }
 
 function getCourseStat(
-  course: Course,
+  course: ResolvedCourse,
   lessonMap: Record<string, { status: "in_progress" | "completed"; exerciseResults: Record<string, { correct: boolean; attempts: number }>; quizScore?: number; completedAt?: string }>,
 ): CourseStat {
   const lessons = course.modules.flatMap((m) => m.lessons);
@@ -279,8 +285,8 @@ function ContinueBanner({
   colors,
   isNew,
 }: {
-  course: Course;
-  lesson: Lesson;
+  course: ResolvedCourse;
+  lesson: LessonRef;
   stat: CourseStat;
   colors: SectionDef["colors"];
   isNew: boolean;
@@ -379,7 +385,7 @@ function CourseCard({
   colors,
   animIndex,
 }: {
-  course: Course;
+  course: ResolvedCourse;
   stat: CourseStat;
   colors: SectionDef["colors"];
   animIndex: number;
@@ -562,7 +568,7 @@ export default function CurriculumPage() {
   /* ── Continue / start ── */
   const { continueCourse, continueStat, continueLesson, continueSec, isNewLearner } =
     React.useMemo(() => {
-      let course: Course | null = null;
+      let course: ResolvedCourse | null = null;
       for (const c of curriculum) {
         const lessons = c.modules.flatMap((m) => m.lessons);
         const hasStarted = lessons.some((l) => lessonMap[l.slug] !== undefined);

@@ -50,6 +50,8 @@ export {
   getCourse,
   getModule,
   getLesson,
+  getLessonById,
   allLessons,
   nextLesson,
+  prevLesson,
 } from "./registry";
