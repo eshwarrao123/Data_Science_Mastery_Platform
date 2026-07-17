@@ -8,7 +8,7 @@ Last updated: 2026-07-16 (Python domain complete)
 | 2 | python | 36 | 36 | ✅ registered (7 modules) | ✅ passing | COMPLETE — all modules implemented, validated, built, navigation verified |
 | 3 | math-statistics | 25 | 0 | metadata only, moduleOrder empty | — | |
 | 4 | data-analysis | 22 | 22 | ✅ all 4 modules registered | ✅ passing | DOMAIN COMPLETE — verified (nav + build) 2026-07-17 |
-| 5 | sql | 22 | 0 | metadata only | — | |
+| 5 | sql | 22 | 22 | ✅ all 5 modules registered | ✅ passing (0 errors, 0 warnings) | ✅ COMPLETE — foundations 6/6, joins 5/5, advanced 5/5, design 4/4, analysis 2/2; nav verified, build clean |
 | 6 | visualization | 16 | 0 | metadata only | — | |
 | 7 | machine-learning | 32 | 0 | metadata only | — | |
 | 8 | deep-learning | 21 | 0 | metadata only | — | |
@@ -99,10 +99,38 @@ Last updated: 2026-07-16 (Python domain complete)
   moduleOrder/lessonOrder match manifest
   (scripts/verify-data-analysis-nav.ts), production build passes.
 
+- 2026-07-17 — sql/foundations complete: what-is-a-database (sql01),
+  select-and-from (sql02), where-and-filtering (sql03), order-by-and-limit
+  (sql04), aggregate-functions (sql05), group-by-and-having (sql06).
+  All 5 SQL modules + course moduleOrder scaffolded; foundations fully
+  registered; other modules registered with partial lessons (joins 2/5,
+  advanced 1/5, design 1/4, analysis 1/2). Validation ✓ (0 errors,
+  partial-module warnings expected), tsc ✓.
+
+- 2026-07-17 — sql/joins complete: inner-join (sql07), left-and-right-joins
+  (sql08), full-outer-join (sql09), self-joins (sql10), multiple-joins
+  (sql11). Registered, validated ✓ (0 errors), tsc ✓.
+
+- 2026-07-17 — sql/advanced complete: subqueries (sql12), ctes (sql13),
+  window-functions-sql (sql14), case-statements (sql15),
+  string-and-date-functions (sql16). Registered, validated ✓ (0 errors,
+  partial-module warnings only for design/analysis), tsc ✓.
+
+- 2026-07-17 — sql/design complete: database-design-concepts (sql17),
+  normalization (sql18), indexes-and-optimization (sql19),
+  transactions-and-acid (sql20). Registered, validated ✓ (0 errors, one
+  partial-module warning for analysis), tsc ✓.
+
+- 2026-07-17 — sql/analysis complete: sql-for-eda (sql21),
+  project-sql-business-analysis (sql22). SQL DOMAIN COMPLETE (22/22).
+  Validation ✓ (0 errors, 0 warnings), tsc ✓, navigation verified
+  (scripts/verify-sql-nav.ts: moduleOrder, lesson resolution, prev/next
+  chain incl. course boundaries all pass), production build ✓.
+
 ## Current phase
 
-Python domain (Domain 2) is COMPLETE. Next: choose the next domain —
-data-analysis continuation (pandas-core has 1 of its lessons; fix the
-pandas-dataframes missing-recap validator warning first) or
-math-statistics. Known open quality item: pandas-dataframes missing recap
-block (validator warning).
+Python (Domain 2), Data Analysis (Domain 4), and SQL (Domain 5) are
+COMPLETE. SQL: 22/22 lessons, all 5 modules registered, validation
+clean (0 errors, 0 warnings), tsc clean, navigation verified, production
+build passing (2026-07-17). Next domain: Machine Learning (06-ml.md) —
+awaiting explicit go-ahead; do not start it automatically.

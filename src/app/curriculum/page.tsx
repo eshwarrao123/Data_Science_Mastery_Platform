@@ -390,9 +390,7 @@ function CourseCard({
   colors: SectionDef["colors"];
   animIndex: number;
 }) {
-  const href = stat.nextLesson
-    ? `/course/${stat.nextLesson.courseSlug}/${stat.nextLesson.moduleSlug}/${stat.nextLesson.slug}`
-    : `/course/${course.slug}`;
+  const href = `/course/${course.slug}`;
 
   return (
     <motion.div

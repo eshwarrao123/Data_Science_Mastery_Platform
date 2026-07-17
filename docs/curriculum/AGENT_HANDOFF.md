@@ -62,13 +62,21 @@ recap "Next up" must point to the actual next lesson in `lessonOrder`).
   transformation (5/5), eda (5/5). All registered, validated, tsc
   clean, nav verified (scripts/verify-data-analysis-nav.ts), production
   build passing (2026-07-17).
+- sql: COMPLETE (22/22) — foundations (6/6), joins (5/5), advanced
+  (5/5), design (4/4), analysis (2/2). All registered, validated, tsc
+  clean, nav verified (scripts/verify-sql-nav.ts), production build
+  passing (2026-07-17).
 - docs/curriculum: README, 15 manifests, trackers.
 
 ## Exact next work item
 
-1. data-analysis domain is done and verified. Next domain per roadmap
-   order: SQL (05-sql.md) — not started. Alternatively math-statistics
-   (03-math-statistics.md, registry currently metadata-only).
+1. SQL domain (05-sql.md) COMPLETE (22/22): foundations 6/6, joins 5/5,
+   advanced 5/5, design 4/4, analysis 2/2. All lessons registered in
+   src/content/courses/sql/index.ts. Validation ✓ (0 errors/warnings),
+   tsc ✓, nav verified (scripts/verify-sql-nav.ts), production build ✓
+   (2026-07-17). Exercise IDs sql01–sql22 all used per manifest.
+   Next domain: Machine Learning (06-ml.md) — do NOT start without an
+   explicit user instruction.
 
 ## Known issues
 

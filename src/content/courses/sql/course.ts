@@ -10,5 +10,5 @@ export const sqlCourse: CourseMeta = {
   estimatedHours: 16,
   category: "Databases",
   orderIndex: 5,
-  moduleOrder: [],
+  moduleOrder: ["foundations", "joins", "advanced", "design", "analysis"],
 };
