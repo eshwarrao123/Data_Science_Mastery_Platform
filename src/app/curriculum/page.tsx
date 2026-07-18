@@ -334,7 +334,7 @@ function ContinueBanner({
               <Clock className="h-3 w-3" aria-hidden />
               {lesson.estimatedTime}
             </span>
-            <span className="text-xs text-amber-400 flex items-center gap-1">
+            <span className="text-xs text-amber-700 dark:text-amber-400 flex items-center gap-1">
               <Zap className="h-3 w-3" aria-hidden />
               {lesson.xpReward} XP
             </span>
@@ -629,12 +629,12 @@ export default function CurriculumPage() {
                 {streakDays > 0 && (
                   <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/20">
                     <Flame className="h-3.5 w-3.5 text-amber-500" aria-hidden />
-                    <span className="text-xs font-semibold text-amber-400">{streakDays} day streak</span>
+                    <span className="text-xs font-semibold text-amber-700 dark:text-amber-400">{streakDays} day streak</span>
                   </div>
                 )}
                 <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
                   <Zap className="h-3 w-3 text-emerald-500" aria-hidden />
-                  <span className="text-xs font-semibold text-emerald-400">{xp.toLocaleString()} XP</span>
+                  <span className="text-xs font-semibold text-emerald-700 dark:text-emerald-400">{xp.toLocaleString()} XP</span>
                 </div>
               </div>
             </div>
@@ -794,7 +794,7 @@ export default function CurriculumPage() {
                         </h2>
 
                         {isComplete && (
-                          <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-emerald-500 bg-emerald-500/10 border border-emerald-500/25 rounded-full px-2 py-0.5">
+                          <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/25 rounded-full px-2 py-0.5">
                             Complete
                           </span>
                         )}
@@ -827,7 +827,7 @@ export default function CurriculumPage() {
                               style={{ width: `${sec.secPct}%` }}
                             />
                           </div>
-                          <span className={cn("text-[10px] tabular-nums", isComplete ? "text-emerald-400" : sec.colors.text)}>
+                          <span className={cn("text-[10px] tabular-nums", isComplete ? "text-emerald-700 dark:text-emerald-400" : sec.colors.text)}>
                             {sec.secPct}%
                           </span>
                         </div>
@@ -902,7 +902,7 @@ export default function CurriculumPage() {
                           <Link
                             key={course.id}
                             href={`/course/${course.slug}`}
-                            className="text-[11px] font-medium px-2.5 py-1 rounded-lg border border-emerald-500/25 bg-emerald-500/8 text-emerald-400 hover:bg-emerald-500/15 transition-colors"
+                            className="text-[11px] font-medium px-2.5 py-1 rounded-lg border border-emerald-500/25 bg-emerald-500/8 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/15 transition-colors"
                           >
                             ✓ {course.title}
                           </Link>

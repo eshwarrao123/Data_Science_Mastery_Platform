@@ -53,7 +53,7 @@ export function ProfileHeader() {
           { icon: Zap, label: "Total XP", value: xp.toLocaleString(), color: "text-amber-500" },
           { icon: Flame, label: "Day Streak", value: streakDays.toString(), color: "text-orange-500" },
           { icon: BookOpen, label: "Lessons Done", value: completedCount.toString(), color: "text-emerald-500" },
-          { icon: Settings, label: "Hours Learned", value: Math.round(totalMinutes / 60).toString(), color: "text-sky-400" },
+          { icon: Settings, label: "Hours Learned", value: Math.round(totalMinutes / 60).toString(), color: "text-sky-500" },
         ].map((stat) => {
           const Icon = stat.icon;
           return (

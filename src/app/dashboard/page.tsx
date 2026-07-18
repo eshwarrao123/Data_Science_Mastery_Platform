@@ -188,11 +188,11 @@ type Domain = {
 };
 
 const ROADMAP: Domain[] = [
-  { label: "Data Foundations", sublabel: "Excel · BI · Tableau", dot: "bg-sky-400", active: false, locked: true },
+  { label: "Data Foundations", sublabel: "Excel · BI · Tableau", dot: "bg-sky-500", active: false, locked: true },
   { label: "Python Programming", sublabel: "Currently studying", dot: "bg-violet-500", active: true, locked: false },
-  { label: "Data Analysis", sublabel: "Pandas & EDA", dot: "bg-emerald-400", active: false, locked: true },
-  { label: "Machine Learning", sublabel: "scikit-learn", dot: "bg-orange-400", active: false, locked: true },
-  { label: "SQL & Databases", sublabel: "PostgreSQL", dot: "bg-teal-400", active: false, locked: true },
+  { label: "Data Analysis", sublabel: "Pandas & EDA", dot: "bg-emerald-500", active: false, locked: true },
+  { label: "Machine Learning", sublabel: "scikit-learn", dot: "bg-orange-500", active: false, locked: true },
+  { label: "SQL & Databases", sublabel: "PostgreSQL", dot: "bg-teal-500", active: false, locked: true },
 ];
 
 type AchievementDef = {
@@ -205,13 +205,13 @@ type AchievementDef = {
 };
 
 const ACHIEVEMENT_DEFS: AchievementDef[] = [
-  { id: "first-steps",     Icon: GraduationCap, name: "First Steps",      description: "Complete your first lesson",      colorCls: "text-emerald-400", bgCls: "bg-emerald-500/10" },
-  { id: "on-fire",         Icon: Flame,         name: "On Fire",           description: "Maintain a 3-day streak",         colorCls: "text-amber-400",   bgCls: "bg-amber-500/10"   },
-  { id: "code-breaker",    Icon: Code2,         name: "Code Breaker",      description: "Earn 20+ XP",                     colorCls: "text-violet-400",  bgCls: "bg-violet-500/10"  },
-  { id: "theory-master",   Icon: BookOpen,      name: "Theory Master",     description: "Study across 3+ days",            colorCls: "text-sky-400",     bgCls: "bg-sky-500/10"     },
-  { id: "week-warrior",    Icon: Trophy,        name: "Week Warrior",      description: "Maintain a 7-day streak",         colorCls: "text-amber-400",   bgCls: "bg-amber-500/10"   },
-  { id: "python-padawan",  Icon: Star,          name: "Python Padawan",    description: "Complete 2+ lessons",             colorCls: "text-violet-400",  bgCls: "bg-violet-500/10"  },
-  { id: "data-apprentice", Icon: Award,         name: "Data Apprentice",   description: "Complete Variables & Data Types", colorCls: "text-emerald-400", bgCls: "bg-emerald-500/10" },
+  { id: "first-steps",     Icon: GraduationCap, name: "First Steps",      description: "Complete your first lesson",      colorCls: "text-emerald-600 dark:text-emerald-400", bgCls: "bg-emerald-500/10" },
+  { id: "on-fire",         Icon: Flame,         name: "On Fire",           description: "Maintain a 3-day streak",         colorCls: "text-amber-600 dark:text-amber-400",   bgCls: "bg-amber-500/10"   },
+  { id: "code-breaker",    Icon: Code2,         name: "Code Breaker",      description: "Earn 20+ XP",                     colorCls: "text-violet-600 dark:text-violet-400",  bgCls: "bg-violet-500/10"  },
+  { id: "theory-master",   Icon: BookOpen,      name: "Theory Master",     description: "Study across 3+ days",            colorCls: "text-sky-600 dark:text-sky-400",     bgCls: "bg-sky-500/10"     },
+  { id: "week-warrior",    Icon: Trophy,        name: "Week Warrior",      description: "Maintain a 7-day streak",         colorCls: "text-amber-600 dark:text-amber-400",   bgCls: "bg-amber-500/10"   },
+  { id: "python-padawan",  Icon: Star,          name: "Python Padawan",    description: "Complete 2+ lessons",             colorCls: "text-violet-600 dark:text-violet-400",  bgCls: "bg-violet-500/10"  },
+  { id: "data-apprentice", Icon: Award,         name: "Data Apprentice",   description: "Complete Variables & Data Types", colorCls: "text-emerald-600 dark:text-emerald-400", bgCls: "bg-emerald-500/10" },
 ];
 
 type QuickAction = {
@@ -334,7 +334,7 @@ export default function DashboardPage() {
       Icon: Zap,
       label: "Continue Lesson",
       sublabel: resumeLesson.title,
-      iconCls: "text-violet-400",
+      iconCls: "text-violet-600 dark:text-violet-400",
       bgCls: "bg-violet-500/10 group-hover:bg-violet-500/20",
       href: resumeHref,
     },
@@ -342,7 +342,7 @@ export default function DashboardPage() {
       Icon: Target,
       label: "Daily Challenge",
       sublabel: nextUncompleted ? nextUncompleted.title : "All caught up!",
-      iconCls: "text-amber-400",
+      iconCls: "text-amber-600 dark:text-amber-400",
       bgCls: "bg-amber-500/10 group-hover:bg-amber-500/20",
       href: nextUncompleted
         ? `/course/${nextUncompleted.courseSlug}/${nextUncompleted.moduleSlug}/${nextUncompleted.slug}`
@@ -352,7 +352,7 @@ export default function DashboardPage() {
       Icon: BookOpen,
       label: "Review Theory",
       sublabel: "Reinforce key concepts",
-      iconCls: "text-sky-400",
+      iconCls: "text-sky-600 dark:text-sky-400",
       bgCls: "bg-sky-500/10 group-hover:bg-sky-500/20",
       href: resumeHref,
     },
@@ -360,7 +360,7 @@ export default function DashboardPage() {
       Icon: Code2,
       label: "Build a Project",
       sublabel: "Apply your skills",
-      iconCls: "text-emerald-400",
+      iconCls: "text-emerald-600 dark:text-emerald-400",
       bgCls: "bg-emerald-500/10 group-hover:bg-emerald-500/20",
       href: "/",
     },
@@ -370,7 +370,7 @@ export default function DashboardPage() {
   const MILESTONES = [
     {
       Icon: Trophy,
-      iconCls: "text-violet-400",
+      iconCls: "text-violet-600 dark:text-violet-400",
       label: `Reach Level ${level + 1}`,
       sublabel: `${xpToNext} XP to go`,
       value: levelPct,
@@ -378,7 +378,7 @@ export default function DashboardPage() {
     },
     {
       Icon: Flame,
-      iconCls: "text-amber-400",
+      iconCls: "text-amber-600 dark:text-amber-400",
       label: "7-Day Streak",
       sublabel: streakDays >= 7 ? "Achieved!" : `${7 - streakDays} more ${7 - streakDays === 1 ? "day" : "days"} to go`,
       value: Math.min(100, (streakDays / 7) * 100),
@@ -386,7 +386,7 @@ export default function DashboardPage() {
     },
     {
       Icon: CheckCircle2,
-      iconCls: "text-emerald-400",
+      iconCls: "text-emerald-600 dark:text-emerald-400",
       label: "Complete Python Foundations",
       sublabel: `${completed} of ${lessons.length} lessons done`,
       value: courseProgress,
@@ -394,7 +394,7 @@ export default function DashboardPage() {
     },
     {
       Icon: TrendingUp,
-      iconCls: "text-sky-400",
+      iconCls: "text-sky-600 dark:text-sky-400",
       label: "30-Day Streak",
       sublabel: streakDays >= 30 ? "Achieved!" : `${30 - Math.min(30, streakDays)} more days to go`,
       value: Math.min(100, (streakDays / 30) * 100),
@@ -410,10 +410,10 @@ export default function DashboardPage() {
     color: string;
     Icon: React.ComponentType<{ className?: string }>;
   }> = [
-    { label: "Lessons Done",    value: `${completed}/${lessons.length}`, sublabel: "of total lessons",     color: "text-emerald-400", Icon: CheckCircle2 },
-    { label: "Day Streak",      value: String(streakDays),               sublabel: "consecutive days",      color: "text-amber-400",   Icon: Flame        },
-    { label: "Coding Problems", value: "0",                              sublabel: "coming soon",            color: "text-violet-400",  Icon: Code2        },
-    { label: "Hours Studied",   value: `${hoursTotal}h`,                 sublabel: "total learning time",   color: "text-sky-400",     Icon: Clock        },
+    { label: "Lessons Done",    value: `${completed}/${lessons.length}`, sublabel: "of total lessons",     color: "text-emerald-600 dark:text-emerald-400", Icon: CheckCircle2 },
+    { label: "Day Streak",      value: String(streakDays),               sublabel: "consecutive days",      color: "text-amber-600 dark:text-amber-400",   Icon: Flame        },
+    { label: "Coding Problems", value: "0",                              sublabel: "coming soon",            color: "text-violet-600 dark:text-violet-400",  Icon: Code2        },
+    { label: "Hours Studied",   value: `${hoursTotal}h`,                 sublabel: "total learning time",   color: "text-sky-600 dark:text-sky-400",     Icon: Clock        },
   ];
 
   return (
@@ -434,7 +434,7 @@ export default function DashboardPage() {
           <div className="flex flex-col lg:flex-row items-start lg:items-center gap-10">
             {/* Left: greeting + headline + CTA */}
             <div className="flex-1 min-w-0">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-violet-400 mb-3">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-violet-600 dark:text-violet-400 mb-3">
                 {greeting}, Learner
               </p>
               {/* animation slot 1 — hero entrance */}
@@ -457,7 +457,7 @@ export default function DashboardPage() {
                   Continue Learning
                   <ArrowRight className="h-4 w-4" />
                 </Link>
-                <div className="flex items-center gap-1.5 text-sm text-amber-400 font-semibold">
+                <div className="flex items-center gap-1.5 text-sm text-amber-700 dark:text-amber-400 font-semibold">
                   <Zap className="h-4 w-4" />
                   {xp} XP earned
                 </div>
@@ -468,11 +468,11 @@ export default function DashboardPage() {
             <div className="shrink-0 grid grid-cols-2 gap-3 w-full lg:w-80">
               {/* Streak */}
               <div className="rounded-xl border border-amber-500/20 bg-amber-500/8 p-4 flex flex-col gap-1">
-                <div className="flex items-center gap-1.5 text-amber-400 text-[10px] font-bold uppercase tracking-widest">
+                <div className="flex items-center gap-1.5 text-amber-700 dark:text-amber-400 text-[10px] font-bold uppercase tracking-widest">
                   <Flame className="h-3.5 w-3.5" />
                   Streak
                 </div>
-                <div className="text-4xl font-bold text-amber-400 leading-none mt-1 tabular-nums">
+                <div className="text-4xl font-bold text-amber-600 dark:text-amber-400 leading-none mt-1 tabular-nums">
                   {streakDays}
                 </div>
                 <div className="text-xs text-[var(--text-muted)]">
@@ -482,11 +482,11 @@ export default function DashboardPage() {
 
               {/* Level */}
               <div className="rounded-xl border border-violet-500/20 bg-violet-500/8 p-4 flex flex-col gap-1">
-                <div className="flex items-center gap-1.5 text-violet-400 text-[10px] font-bold uppercase tracking-widest">
+                <div className="flex items-center gap-1.5 text-violet-600 dark:text-violet-400 text-[10px] font-bold uppercase tracking-widest">
                   <Trophy className="h-3.5 w-3.5" />
                   Level
                 </div>
-                <div className="text-4xl font-bold text-violet-400 leading-none mt-1 tabular-nums">
+                <div className="text-4xl font-bold text-violet-600 dark:text-violet-400 leading-none mt-1 tabular-nums">
                   {level}
                 </div>
                 <div className="text-xs text-[var(--text-muted)]">{xpToNext} XP to next</div>
@@ -509,7 +509,7 @@ export default function DashboardPage() {
                   colorClass={todayPct >= 100 ? "bg-emerald-500" : "bg-violet-500"}
                 />
                 {todayPct >= 100 && (
-                  <p className="text-[11px] text-emerald-400 mt-1.5 font-medium">
+                  <p className="text-[11px] text-emerald-700 dark:text-emerald-400 mt-1.5 font-medium">
                     Goal reached today ✓
                   </p>
                 )}
@@ -526,10 +526,10 @@ export default function DashboardPage() {
           <ActivityHeatmap activity={activity} />
           <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-4">
             {[
-              { label: "Hours This Week", value: `${thisWeekHrs}h`,         color: "text-violet-400" },
-              { label: "Lessons This Week", value: String(thisWeekLessons), color: "text-emerald-400" },
-              { label: "Total Hours",       value: `${hoursTotal}h`,        color: "text-sky-400"   },
-              { label: "Active Days",       value: String(activityDays),    color: "text-amber-400"  },
+              { label: "Hours This Week", value: `${thisWeekHrs}h`,         color: "text-violet-600 dark:text-violet-400" },
+              { label: "Lessons This Week", value: String(thisWeekLessons), color: "text-emerald-600 dark:text-emerald-400" },
+              { label: "Total Hours",       value: `${hoursTotal}h`,        color: "text-sky-600 dark:text-sky-400"   },
+              { label: "Active Days",       value: String(activityDays),    color: "text-amber-600 dark:text-amber-400"  },
             ].map((stat) => (
               <div
                 key={stat.label}
@@ -549,7 +549,7 @@ export default function DashboardPage() {
           <SectionHead title="Continue Learning" />
           {/* Primary Learning Card — DESIGN.md §4 */}
           <div className="rounded-xl border border-violet-500/30 border-l-4 border-l-violet-500 bg-violet-500/5 p-6 md:p-8">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-violet-400 mb-2">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-violet-600 dark:text-violet-400 mb-2">
               Python for Data Science · Foundations
             </p>
             <h3 className="text-xl font-semibold text-[var(--text-primary)] mb-2">
@@ -577,7 +577,7 @@ export default function DashboardPage() {
             {nextUncompleted && nextUncompleted.slug !== resumeLesson.slug && (
               <p className="text-sm text-[var(--text-secondary)] mb-6">
                 Next milestone:{" "}
-                <span className="text-violet-400 font-medium">{nextUncompleted.title}</span>
+                <span className="text-violet-600 dark:text-violet-400 font-medium">{nextUncompleted.title}</span>
               </p>
             )}
 
@@ -600,7 +600,7 @@ export default function DashboardPage() {
             action={
               <Link
                 href="/curriculum"
-                className="text-sm text-violet-400 hover:text-violet-300 flex items-center gap-1 transition-colors"
+                className="text-sm text-violet-600 hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300 flex items-center gap-1 transition-colors"
               >
                 Full roadmap
                 <ChevronRight className="h-4 w-4" />
@@ -626,7 +626,7 @@ export default function DashboardPage() {
                   ) : domain.active ? (
                     <Badge variant="default">Active</Badge>
                   ) : (
-                    <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
+                    <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
                   )}
                 </div>
                 <div>
@@ -651,12 +651,12 @@ export default function DashboardPage() {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
             {/* XP hero tile — amber, featured */}
             <div className="col-span-2 md:col-span-1 rounded-xl border border-amber-500/20 bg-amber-500/8 p-6 flex flex-col gap-2">
-              <div className="flex items-center gap-1.5 text-amber-400 text-[10px] font-bold uppercase tracking-widest">
+              <div className="flex items-center gap-1.5 text-amber-700 dark:text-amber-400 text-[10px] font-bold uppercase tracking-widest">
                 <Zap className="h-4 w-4" />
                 Total XP
               </div>
               {/* animation slot 3: XP count-up */}
-              <div className="text-5xl font-bold text-amber-400 leading-none mt-2 tabular-nums">
+              <div className="text-5xl font-bold text-amber-600 dark:text-amber-400 leading-none mt-2 tabular-nums">
                 {displayXp}
               </div>
               <ThinBar value={levelPct} colorClass="bg-amber-500" className="mt-2" />
@@ -762,7 +762,7 @@ export default function DashboardPage() {
                     {action.sublabel}
                   </div>
                 </div>
-                <ArrowRight className="h-4 w-4 text-[var(--text-muted)] group-hover:text-violet-400 group-hover:translate-x-0.5 transition-all" />
+                <ArrowRight className="h-4 w-4 text-[var(--text-muted)] group-hover:text-violet-600 dark:group-hover:text-violet-400 group-hover:translate-x-0.5 transition-all" />
               </Link>
             ))}
           </div>

@@ -35,7 +35,17 @@ export default function RootLayout({
       className={`${geistSans.variable} ${jetbrainsMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col bg-base text-primary">
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              // Apply the stored theme before first paint to avoid a flash
+              // of the wrong theme. Mirrors the logic in theme-provider.tsx.
+              `try{if((localStorage.getItem("dsm-theme")??"dark")==="dark")document.documentElement.classList.add("dark")}catch(e){}`,
+          }}
+        />
+      </head>
+      <body className="min-h-full flex flex-col bg-[var(--bg-base)] text-[var(--text-primary)]">
         <Providers>
           <TopNav />
           <CommandPalette />

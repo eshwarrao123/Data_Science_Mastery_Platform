@@ -763,13 +763,9 @@ export default function LessonPage() {
   const leftPanelRef = React.useRef<HTMLDivElement>(null);
 
   /* — Resizable vertical divider — */
-  const [leftWidth, handleResizeDrag] = useResizeX(
-    typeof window !== "undefined"
-      ? Math.min(560, Math.max(360, window.innerWidth * 0.44))
-      : 480,
-    300,
-    720,
-  );
+  /* Deterministic initial width — must match on server and client to
+     avoid a hydration mismatch on the inline --lw style. */
+  const [leftWidth, handleResizeDrag] = useResizeX(480, 300, 720);
 
   /* — Engines / stores (business logic untouched) — */
   const startLesson = useProgress((s) => s.startLesson);

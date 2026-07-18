@@ -272,6 +272,10 @@ export function InteractiveDiagram({ visual }: InteractiveDiagramProps) {
   }
 
   /* Other kinds — simplified node list (SVG diagram removed as per brief) */
+  return <NodeListDiagram visual={visual} />;
+}
+
+function NodeListDiagram({ visual }: InteractiveDiagramProps) {
   const [selected, setSelected] = React.useState<DiagramNode | null>(null);
   return (
     <div className="rounded-xl border border-[var(--border-color)] bg-[var(--bg-elevated)] overflow-hidden">

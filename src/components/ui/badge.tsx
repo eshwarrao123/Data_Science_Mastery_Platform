@@ -10,9 +10,9 @@ interface BadgeProps {
 
 const variants: Record<BadgeVariant, string> = {
   default: "bg-[var(--bg-subtle)] text-[var(--text-secondary)] border border-[var(--border-color)]",
-  success: "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20",
-  warning: "bg-amber-500/10 text-amber-500 border border-amber-500/20",
-  error: "bg-rose-500/10 text-rose-500 border border-rose-500/20",
+  success: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20",
+  warning: "bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20",
+  error: "bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20",
   muted: "bg-[var(--bg-subtle)] text-[var(--text-muted)] border border-[var(--border-color)]",
 };
 

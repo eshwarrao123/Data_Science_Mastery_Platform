@@ -179,14 +179,7 @@ export default function HomePage() {
           Master Data Science.
           <br />
           <span className="text-[var(--text-muted)]">From Zero.</span>{" "}
-          <span
-            style={{
-              backgroundImage: "linear-gradient(135deg, #a78bfa, #34d399)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              backgroundClip: "text",
-            }}
-          >
+          <span className="bg-gradient-to-br from-violet-600 to-emerald-600 dark:from-violet-400 dark:to-emerald-400 bg-clip-text text-transparent">
             Industry Ready.
           </span>
         </motion.h1>
@@ -460,7 +453,7 @@ export default function HomePage() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
-            className="rounded-2xl border border-violet-500/30 dark:border-violet-500/30 border-violet-200 overflow-hidden"
+            className="rounded-2xl border border-violet-200 dark:border-violet-500/30 overflow-hidden"
           >
             {/* Breadcrumb */}
             <div className="px-4 py-2.5 bg-[var(--bg-subtle)] border-b border-[var(--border-color)]">
@@ -524,7 +517,7 @@ export default function HomePage() {
               </Button>
               <Button variant="secondary" size="sm">Reset</Button>
               <Button variant="secondary" size="sm" className="gap-1.5">
-                <Sparkles className="h-3 w-3 text-indigo-400" />
+                <Sparkles className="h-3 w-3 text-indigo-600 dark:text-indigo-400" />
                 AI Hint
               </Button>
             </div>

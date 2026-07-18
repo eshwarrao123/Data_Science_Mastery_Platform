@@ -244,8 +244,8 @@ function CodingExercise({
           animate={{ opacity: 1, y: 0 }}
           className={cn(
             "p-3 rounded-lg border text-xs font-mono",
-            result.stderr ? "border-rose-500/30 bg-rose-500/5 text-rose-400" :
-            result.matchedExpected ? "border-emerald-500/30 bg-emerald-500/5 text-emerald-400" :
+            result.stderr ? "border-rose-500/30 bg-rose-500/5 text-rose-600 dark:text-rose-400" :
+            result.matchedExpected ? "border-emerald-500/30 bg-emerald-500/5 text-emerald-600 dark:text-emerald-400" :
             "border-[var(--border-color)] bg-[#1e1e1e] text-[#d4d4d4]",
           )}
         >

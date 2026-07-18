@@ -103,7 +103,6 @@
 }
 
 @theme inline {
-  --color-base:      var(--bg-base);
   --color-elevated:  var(--bg-elevated);
   --color-subtle:    var(--bg-subtle);
   --color-sidebar:   var(--bg-sidebar);
